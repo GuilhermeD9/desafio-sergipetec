@@ -6,6 +6,8 @@ import dev.gui.processo_sergipetec.model.MotoModel;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VeiculoService {
     public void cadastrarVeiculo(VeiculoModel veiculo) throws SQLException {
@@ -58,6 +60,49 @@ public class VeiculoService {
             statement.setInt(2, moto.getCilindrada());
             statement.executeUpdate();
         }
+    }
+
+    public List<VeiculoModel> listarVeiculos() throws SQLException {
+        String query = "SELECT * FROM TB_VEICULO";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = connection.prepareStatement(query);
+        ResultSet rs = statement.executeQuery()) {
+            List<VeiculoModel> veiculos = new ArrayList<>();
+            while (rs.next()) {
+                VeiculoModel veiculo = new VeiculoModel(
+                        rs.getInt("id"),
+                        rs.getString("modelo"),
+                        rs.getString("fabricante"),
+                        rs.getInt("ano"),
+                        rs.getDouble("preco")
+                );
+                veiculos.add(veiculo);
+            }
+            return veiculos;
+        }
+    }
+
+    public VeiculoModel listarVeiculoPorId(int id) throws SQLException {
+        String query = "SELECT * FROM TB_VEICULO WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, id);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return new VeiculoModel(
+                            rs.getInt("id"),
+                            rs.getString("modelo"),
+                            rs.getString("fabricante"),
+                            rs.getInt("ano"),
+                            rs.getDouble("preco")
+                    );
+                }
+            }
+        }
+        return null;
     }
 
 
