@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MotoModel {
+public class MotoModel extends VeiculoModel {
     private int cilindrada;
 }

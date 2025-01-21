@@ -11,6 +11,4 @@ public class VeiculoModel {
     private String fabricante;
     private int ano;
     private double preco;
-
-
 }
