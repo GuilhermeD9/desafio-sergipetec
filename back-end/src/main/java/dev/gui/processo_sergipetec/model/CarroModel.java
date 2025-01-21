@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CarroModel extends VeiculoModel {
-    private String quantidadePortas;
-    private TipoCombustível tipoCombustível;
+    private int quantidadePortas;
+    private String tipoCombustivel;
 }
