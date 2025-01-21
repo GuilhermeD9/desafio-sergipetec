@@ -20,7 +20,6 @@ public class VeiculoService {
              statement.setInt(3, veiculo.getAno());
              statement.setDouble(4, veiculo.getPreco());
              statement.setString(5, veiculo instanceof CarroModel ? "Carro" : "Moto");
-
              statement.executeUpdate();
 
              try (ResultSet keys = statement.getGeneratedKeys()) {
@@ -105,5 +104,27 @@ public class VeiculoService {
         return null;
     }
 
+    public void atualizarVeiculo(VeiculoModel veiculo) throws SQLException {
+        String query = "UPDATE TB_VEICULO SET modelo = ?, fabricante = ?, ano = ?, preco = ? WHERE id = ?";
 
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, veiculo.getModelo());
+            statement.setString(2, veiculo.getFabricante());
+            statement.setInt(3, veiculo.getAno());
+            statement.setDouble(4, veiculo.getPreco());
+            statement.setInt(5, veiculo.getId());
+            statement.executeUpdate();
+        }
+    }
+
+    public void excluirVeiculo(int id) throws SQLException {
+        String query = "DELETE FROM TB_VEICULO WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        }
+    }
 }
