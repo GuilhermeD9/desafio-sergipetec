@@ -18,7 +18,6 @@ import java.sql.SQLException;
 public class VeiculoController {
     private final VeiculoService veiculoService;
 
-    @Autowired
     public VeiculoController(VeiculoService veiculoService) {
         this.veiculoService = veiculoService;
     }

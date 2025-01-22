@@ -10,4 +10,7 @@ import lombok.NoArgsConstructor;
 public class CarroModel extends VeiculoModel {
     private int quantidadePortas;
     private String tipoCombustivel;
+
+    public CarroModel(int id, String modelo, String fabricante, int ano, double preco, int quantidadePortas, String tipoCombustivel) {
+    }
 }

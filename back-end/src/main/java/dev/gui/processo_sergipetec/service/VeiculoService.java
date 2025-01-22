@@ -95,6 +95,11 @@ public class VeiculoService {
                     int ano = rs.getInt("ano");
                     double preco = rs.getDouble("preco");
 
+                    if (tipo.equals("CarroModel")) {
+                        return listarCarroPorId(id, modelo, fabricante, ano, preco, connection);
+                    } else if (tipo.equals("MotoModel")) {
+                        return listarMotoPorId(id, modelo, fabricante, ano, preco, connection);
+                    }
                 }
             }
         }
@@ -123,5 +128,36 @@ public class VeiculoService {
             statement.setInt(1, id);
             statement.executeUpdate();
         }
+    }
+
+    private CarroModel listarCarroPorId(int id, String modelo, String fabricante, int ano, double preco, Connection connection) throws SQLException {
+        String queryCarro = "SELECT * FROM TB_CARRO WHERE id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(queryCarro)) {
+            statement.setInt(1, id);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    int quantidadePortas = rs.getInt("quantidade_portas");
+                    String tipoCombustivel = rs.getString("tipo_combustivel");
+                    return new CarroModel(id, modelo, fabricante, ano, preco, quantidadePortas, tipoCombustivel);
+                }
+            }
+        }
+        return null;
+    }
+
+    private MotoModel listarMotoPorId(int id, String modelo, String fabricante, int ano, double preco, Connection connection) throws SQLException {
+        String queryMoto = "SELECT * FROM TB_MOTO WHERE id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(queryMoto)) {
+            statement.setInt(1, id);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    int cilindrada = rs.getInt("cilindrada");
+                    return new MotoModel(id, modelo, fabricante, ano, preco, cilindrada);
+                }
+            }
+        }
+        return null;
     }
 }
