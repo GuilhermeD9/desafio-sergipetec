@@ -106,7 +106,7 @@ public class VeiculoService {
         return null;
     }
 
-    public void atualizarVeiculo(VeiculoModel veiculo) throws SQLException {
+    public void atualizarVeiculo(int id, VeiculoModel veiculo) throws SQLException {
         String query = "UPDATE TB_VEICULO SET modelo = ?, fabricante = ?, ano = ?, preco = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -115,18 +115,27 @@ public class VeiculoService {
             statement.setString(2, veiculo.getFabricante());
             statement.setInt(3, veiculo.getAno());
             statement.setDouble(4, veiculo.getPreco());
-            statement.setInt(5, veiculo.getId());
+            statement.setInt(5, id);
             statement.executeUpdate();
         }
     }
 
     public void excluirVeiculo(int id) throws SQLException {
-        String query = "DELETE FROM TB_VEICULO WHERE id = ?";
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            try ( PreparedStatement deleteCarro = connection.prepareStatement("DELETE FROM TB_CARRO WHERE id = ?")) {
+                deleteCarro.setInt(1, id);
+                deleteCarro.executeUpdate();
+            }
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, id);
-            statement.executeUpdate();
+            try ( PreparedStatement deleteMoto = connection.prepareStatement("DELETE FROM TB_MOTO WHERE id = ?")) {
+                deleteMoto.setInt(1, id);
+                deleteMoto.executeUpdate();
+            }
+
+            try ( PreparedStatement deleteVeiculo = connection.prepareStatement("DELETE FROM TB_VEICULO WHERE id = ?")) {
+                deleteVeiculo.setInt(1, id);
+                deleteVeiculo.executeUpdate();
+            }
         }
     }
 
