@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class VeiculoModel {
+public class VeiculoModel {
     private int id;
     private String modelo;
     private String fabricante;

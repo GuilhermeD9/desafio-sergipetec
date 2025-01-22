@@ -120,18 +120,41 @@ public class VeiculoService {
     }
 
     public void atualizarVeiculo(int id, VeiculoModel veiculo) throws SQLException {
-        String query = "UPDATE TB_VEICULO SET modelo = ?, fabricante = ?, ano = ?, preco = ? WHERE id = ?";
+        String queryVeiculo = "UPDATE TB_VEICULO SET modelo = ?, fabricante = ?, ano = ?, preco = ? WHERE id = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, veiculo.getModelo());
-            statement.setString(2, veiculo.getFabricante());
-            statement.setInt(3, veiculo.getAno());
-            statement.setDouble(4, veiculo.getPreco());
-            statement.setInt(5, id);
-            statement.executeUpdate();
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            // Atualiza os dados comuns do veículo na tabela TB_VEICULO
+            try (PreparedStatement statement = connection.prepareStatement(queryVeiculo)) {
+                statement.setString(1, veiculo.getModelo());
+                statement.setString(2, veiculo.getFabricante());
+                statement.setInt(3, veiculo.getAno());
+                statement.setDouble(4, veiculo.getPreco());
+                statement.setInt(5, id);
+                statement.executeUpdate();
+            }
+
+            // Verifica o tipo do veículo e atualiza as tabelas específicas
+            if (veiculo instanceof CarroModel) {
+                CarroModel carro = (CarroModel) veiculo;
+                String queryCarro = "UPDATE TB_CARRO SET quantidade_portas = ?, tipo_combustivel = ? WHERE id = ?";
+                try (PreparedStatement statement = connection.prepareStatement(queryCarro)) {
+                    statement.setInt(1, carro.getQuantidadePortas());
+                    statement.setString(2, carro.getTipoCombustivel());
+                    statement.setInt(3, id);
+                    statement.executeUpdate();
+                }
+            } else if (veiculo instanceof MotoModel) {
+                MotoModel moto = (MotoModel) veiculo;
+                String queryMoto = "UPDATE TB_MOTO SET cilindrada = ? WHERE id = ?";
+                try (PreparedStatement statement = connection.prepareStatement(queryMoto)) {
+                    statement.setInt(1, moto.getCilindrada());
+                    statement.setInt(2, id);
+                    statement.executeUpdate();
+                }
+            }
         }
     }
+
 
     public void excluirVeiculo(int id) throws SQLException {
         try (Connection connection = DatabaseConnection.getConnection()) {
