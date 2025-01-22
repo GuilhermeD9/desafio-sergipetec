@@ -12,5 +12,8 @@ public class CarroModel extends VeiculoModel {
     private String tipoCombustivel;
 
     public CarroModel(int id, String modelo, String fabricante, int ano, double preco, int quantidadePortas, String tipoCombustivel) {
+        super(id, modelo, fabricante, ano, preco);
+        this.quantidadePortas = quantidadePortas;
+        this.tipoCombustivel = tipoCombustivel;
     }
 }

@@ -108,10 +108,13 @@ public class VeiculoService {
                     int ano = rs.getInt("ano");
                     double preco = rs.getDouble("preco");
 
-                    if (tipo.equals("CarroModel")) {
-                        return listarCarroPorId(id, modelo, fabricante, ano, preco, connection);
-                    } else if (tipo.equals("MotoModel")) {
-                        return listarMotoPorId(id, modelo, fabricante, ano, preco, connection);
+                    switch (tipo) {
+                        case "CarroModel":
+                            return listarCarroPorId(id, modelo, fabricante, ano, preco, connection);
+                        case "MotoModel":
+                            return listarMotoPorId(id, modelo, fabricante, ano, preco, connection);
+                        default:
+                            throw new IllegalArgumentException("Tipo de veículo desconhecido: " + tipo);
                     }
                 }
             }
@@ -184,6 +187,7 @@ public class VeiculoService {
                 if (rs.next()) {
                     int quantidadePortas = rs.getInt("quantidade_portas");
                     String tipoCombustivel = rs.getString("tipo_combustivel");
+                    System.out.println("Carro encontrado: ID " + id + " Modelo: " + modelo);
                     return new CarroModel(id, modelo, fabricante, ano, preco, quantidadePortas, tipoCombustivel);
                 }
             }
@@ -199,6 +203,7 @@ public class VeiculoService {
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     int cilindrada = rs.getInt("cilindrada");
+                    System.out.println("Moto encontrado: ID " + id + " Modelo: " + modelo);
                     return new MotoModel(id, modelo, fabricante, ano, preco, cilindrada);
                 }
             }
