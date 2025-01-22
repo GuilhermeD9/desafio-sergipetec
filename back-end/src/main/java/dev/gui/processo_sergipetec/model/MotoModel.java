@@ -5,8 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class MotoModel extends VeiculoModel {
     private int cilindrada;
+
+    public MotoModel(int id, String modelo, String fabricante, int ano, double preco, int cilindrada) {
+    }
 }

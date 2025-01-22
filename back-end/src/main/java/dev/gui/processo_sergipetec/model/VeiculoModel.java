@@ -1,6 +1,8 @@
 package dev.gui.processo_sergipetec.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -11,4 +13,5 @@ public class VeiculoModel {
     private String fabricante;
     private int ano;
     private double preco;
+    private String tipo;
 }

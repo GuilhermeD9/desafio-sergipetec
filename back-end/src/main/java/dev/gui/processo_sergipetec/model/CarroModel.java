@@ -1,6 +1,5 @@
 package dev.gui.processo_sergipetec.model;
 
-import dev.gui.processo_sergipetec.TipoCombustível;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CarroModel extends VeiculoModel {
-    private String quantidadePortas;
-    private TipoCombustível tipoCombustível;
+    private int quantidadePortas;
+    private String tipoCombustivel;
+
+    public CarroModel(int id, String modelo, String fabricante, int ano, double preco, int quantidadePortas, String tipoCombustivel) {
+    }
 }
