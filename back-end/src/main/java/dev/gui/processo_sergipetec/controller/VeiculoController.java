@@ -38,6 +38,12 @@ public class VeiculoController {
         return ResponseEntity.ok(veiculos);
     }
 
+    @GetMapping("/listar/{id}")
+    public ResponseEntity<VeiculoModel> listarVeiculoPorId(int id) throws SQLException {
+        VeiculoModel veiculo = veiculoService.listarVeiculoPorId(id);
+        return ResponseEntity.ok(veiculo);
+    }
+
     @PutMapping("/atualizar/{id}")
     public ResponseEntity<String> atualizarVeiculo(@PathVariable int id, @RequestBody VeiculoModel veiculoModel) throws SQLException {
         veiculoService.atualizarVeiculo(id, veiculoModel);
