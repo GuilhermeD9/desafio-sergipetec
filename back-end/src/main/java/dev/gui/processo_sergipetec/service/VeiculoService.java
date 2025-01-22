@@ -68,6 +68,7 @@ public class VeiculoService {
         ResultSet rs = statement.executeQuery()) {
 
             List<VeiculoModel> veiculos = new ArrayList<>();
+
             while (rs.next()) {
                     String tipo = rs.getString("tipo");
                     int id = rs.getInt("id");
@@ -75,6 +76,18 @@ public class VeiculoService {
                     String fabricante = rs.getString("fabricante");
                     int ano = rs.getInt("ano");
                     double preco = rs.getDouble("preco");
+
+                    VeiculoModel veiculo = new VeiculoModel() {
+                        {
+                            setId(id);
+                            setModelo(modelo);
+                            setFabricante(fabricante);
+                            setAno(ano);
+                            setPreco(preco);
+                            setTipo(tipo);
+                        }
+                    };
+                    veiculos.add(veiculo);
             }
             return veiculos;
         }
