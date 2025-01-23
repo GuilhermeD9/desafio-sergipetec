@@ -15,15 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CadastroCarro implements ICadastro {
+public class CadastroCarro extends VeiculoService implements ICadastro {
     private final VeiculoService veiculoService;
 
     public CadastroCarro(VeiculoService veiculoService) {
         this.veiculoService = veiculoService;
     }
 
-    @Override
-    public Object cadastrar(CarroModel carro) throws SQLException {
+    public Object cadastrarCarro(CarroModel carro) throws SQLException {
         veiculoService.cadastrarVeiculo(carro);
         String query = "INSERT INTO TB_CARRO (id, quantidade_portas, tipo_combustivel) VALUES (?, ?, ?)";
 
@@ -38,7 +37,8 @@ public class CadastroCarro implements ICadastro {
     }
 
     @Override
-    public Object atualizar(int id, Object veiculo) throws SQLException {
+    public Object atualizar(int id, VeiculoModel veiculo) throws SQLException {
+        veiculoService.atualizarVeiculo(id, veiculo);
         CarroModel carro = (CarroModel) veiculo;
         String queryCarro = "UPDATE TB_CARRO SET quantidade_portas = ?, tipo_combustivel = ? WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -97,20 +97,6 @@ public class CadastroCarro implements ICadastro {
         return null;
     }
 
-    private VeiculoModel mapearVeiculo(ResultSet rs, String tipo, Connection connection) throws SQLException {
-        int id = rs.getInt("id");
-        String modelo = rs.getString("modelo");
-        String fabricante = rs.getString("fabricante");
-        int ano = rs.getInt("ano");
-        double preco = rs.getDouble("preco");
-
-        switch (tipo) {
-            case "CarroModel":
-                return DetalharCarro(id, modelo, fabricante, ano, preco, tipo, connection);
-            default:
-                return null;
-        }
-    }
 
     private CarroModel DetalharCarro(int id, String modelo, String fabricante, int ano, double preco, String tipo, Connection connection) throws SQLException {
         String queryCarro = "SELECT * FROM TB_CARRO WHERE id = ?";

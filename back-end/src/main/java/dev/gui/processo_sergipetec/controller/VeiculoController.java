@@ -4,6 +4,7 @@ import dev.gui.processo_sergipetec.model.CarroModel;
 import dev.gui.processo_sergipetec.model.MotoModel;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
 import dev.gui.processo_sergipetec.service.IncluirCarroService;
+import dev.gui.processo_sergipetec.service.IncluirMotoService;
 import dev.gui.processo_sergipetec.service.VeiculoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +18,12 @@ import java.util.List;
 public class VeiculoController {
     private final VeiculoService veiculoService;
     private final IncluirCarroService carroService;
+    private final IncluirMotoService motoService;
 
-    public VeiculoController(VeiculoService veiculoService, IncluirCarroService carroService) {
+    public VeiculoController(VeiculoService veiculoService, IncluirCarroService carroService, IncluirMotoService motoService) {
         this.veiculoService = veiculoService;
         this.carroService = carroService;
+        this.motoService = motoService;
     }
 
     @PostMapping("/cadastrar/carro")
@@ -30,9 +33,9 @@ public class VeiculoController {
     }
 
     @PostMapping("/cadastrar/moto")
-    public ResponseEntity<String> cadastrarMoto(@RequestBody MotoModel moto) throws SQLException {
-        veiculoService.cadastrarMoto(moto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Veículo cadastrado");
+    public ResponseEntity<VeiculoModel> cadastrarMoto(@RequestBody MotoModel moto) throws SQLException {
+        motoService.cadastrarMoto(moto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(moto);
     }
 
     @GetMapping("/listartodos")
@@ -48,14 +51,14 @@ public class VeiculoController {
     }
 
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<String> atualizarVeiculo(@PathVariable int id, @RequestBody VeiculoModel veiculoModel) throws SQLException {
-        veiculoService.atualizarVeiculo(id, veiculoModel);
-        return ResponseEntity.ok("Veículo atualizado com sucesso!");
+    public ResponseEntity<VeiculoModel> atualizarVeiculo(@PathVariable int id, @RequestBody VeiculoModel veiculo) throws SQLException {
+        veiculoService.atualizarVeiculo(id, veiculo);
+        return ResponseEntity.ok(veiculo);
     }
 
     @DeleteMapping("/deletar/{id}")
     public ResponseEntity<String> deletarVeiculo(@PathVariable int id) throws SQLException {
         veiculoService.excluirVeiculo(id);
-        return ResponseEntity.ok("Veículo deletado com sucesso!");
+        return ResponseEntity.ok("Veículo deletado com sucesso! ID:" + id);
     }
 }

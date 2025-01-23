@@ -15,6 +15,6 @@ public class IncluirCarroService {
     }
 
     public void cadastrarCarrro(CarroModel carroModel) throws SQLException {
-        cadastroCarro.cadastrar(carroModel);
+        cadastroCarro.cadastrarCarro(carroModel);
     }
 }
