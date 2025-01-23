@@ -1,7 +1,7 @@
-package dev.gui.processo_sergipetec.service;
+package dev.gui.processo_sergipetec.cadastro;
 
-import dev.gui.processo_sergipetec.cadastro.CadastroCarro;
 import dev.gui.processo_sergipetec.connection.DatabaseConnection;
+import dev.gui.processo_sergipetec.interfaces.ICadastro;
 import dev.gui.processo_sergipetec.model.CarroModel;
 import dev.gui.processo_sergipetec.model.MotoModel;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class VeiculoService {
+public class CadastroVeiculo implements ICadastro {
 
-    public void cadastrarVeiculo(VeiculoModel veiculo) throws SQLException {
+    protected void cadastrarVeiculo(VeiculoModel veiculo) throws SQLException {
         String query = "INSERT INTO TB_VEICULO (modelo, fabricante, ano, preco, tipo) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -34,31 +34,11 @@ public class VeiculoService {
         }
     }
 
-
-
-    public List<VeiculoModel> listarVeiculos() throws SQLException {
-        String query = "SELECT * FROM TB_VEICULO";
-
-        try (Connection connection = DatabaseConnection.getConnection();
-        PreparedStatement statement = connection.prepareStatement(query);
-        ResultSet rs = statement.executeQuery()) {
-
-            List<VeiculoModel> veiculos = new ArrayList<>();
-
-            while (rs.next()) {
-                    String tipo = rs.getString("tipo");
-                    VeiculoModel veiculo = mapearVeiculo(rs, tipo, connection);
-                    if (veiculo != null) veiculos.add(veiculo);
-            }
-            return veiculos;
-        }
-    }
-
-    public void atualizarVeiculo(int id, VeiculoModel veiculo) throws SQLException {
+    @Override
+    public Object atualizar(int id, VeiculoModel veiculo) throws SQLException {
         String query = "UPDATE TB_VEICULO SET modelo = ?, fabricante = ?, ano = ?, preco = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection()) {
-            // Atualiza os dados comuns do veículo na tabela TB_VEICULO
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, veiculo.getModelo());
                 statement.setString(2, veiculo.getFabricante());
@@ -68,19 +48,33 @@ public class VeiculoService {
                 statement.executeUpdate();
             }
         }
+        return veiculo;
     }
 
-    public void excluirVeiculo(int id) throws SQLException {
+    @Override
+    public void deletar(int id) throws SQLException {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            try ( PreparedStatement deleteCarro = connection.prepareStatement("DELETE FROM TB_CARRO WHERE id = ?")) {
-                deleteCarro.setInt(1, id);
-                deleteCarro.executeUpdate();
-            }
-
             try ( PreparedStatement deleteVeiculo = connection.prepareStatement("DELETE FROM TB_VEICULO WHERE id = ?")) {
                 deleteVeiculo.setInt(1, id);
                 deleteVeiculo.executeUpdate();
             }
+        }
+    }
+
+    public List<VeiculoModel> listarVeiculos() throws SQLException {
+        String query = "SELECT * FROM TB_VEICULO";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet rs = statement.executeQuery()) {
+            List<VeiculoModel> veiculos = new ArrayList<>();
+
+            while (rs.next()) {
+                String tipo = rs.getString("tipo");
+                VeiculoModel veiculo = mapearVeiculo(rs, tipo, connection);
+                if (veiculo != null) veiculos.add(veiculo);
+            }
+            return veiculos;
         }
     }
 

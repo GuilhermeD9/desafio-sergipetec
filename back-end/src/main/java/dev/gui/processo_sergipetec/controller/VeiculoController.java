@@ -5,7 +5,8 @@ import dev.gui.processo_sergipetec.model.MotoModel;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
 import dev.gui.processo_sergipetec.service.IncluirCarroService;
 import dev.gui.processo_sergipetec.service.IncluirMotoService;
-import dev.gui.processo_sergipetec.service.VeiculoService;
+import dev.gui.processo_sergipetec.cadastro.CadastroVeiculo;
+import dev.gui.processo_sergipetec.service.IncluirVeiculoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +17,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/veiculos")
 public class VeiculoController {
-    private final VeiculoService veiculoService;
+    private final IncluirVeiculoService veiculoService;
     private final IncluirCarroService carroService;
     private final IncluirMotoService motoService;
 
-    public VeiculoController(VeiculoService veiculoService, IncluirCarroService carroService, IncluirMotoService motoService) {
+    public VeiculoController(IncluirVeiculoService veiculoService, IncluirCarroService carroService, IncluirMotoService motoService) {
         this.veiculoService = veiculoService;
         this.carroService = carroService;
         this.motoService = motoService;
@@ -40,14 +41,19 @@ public class VeiculoController {
 
     @GetMapping("/listartodos")
     public ResponseEntity<List<VeiculoModel>> listarVeiculos() throws SQLException {
-        List<VeiculoModel> veiculos = veiculoService.listarVeiculos();
+        List<VeiculoModel> veiculos = veiculoService.buscarTodosVeiculos();
         return ResponseEntity.ok(veiculos);
     }
 
     @GetMapping("/listar/{id}")
     public ResponseEntity<VeiculoModel> listarVeiculoPorId(@PathVariable int id) throws SQLException {
-        VeiculoModel veiculo = veiculoService.listarVeiculoPorId(id);
-        return ResponseEntity.ok(veiculo);
+        VeiculoModel veiculo = veiculoService.buscarVeiculoPorId(id);
+        if (veiculo != null) {
+            return ResponseEntity.ok(veiculo);
+        }
+        else {
+            return null;
+        }
     }
 
     @PutMapping("/atualizar/{id}")
@@ -58,7 +64,7 @@ public class VeiculoController {
 
     @DeleteMapping("/deletar/{id}")
     public ResponseEntity<String> deletarVeiculo(@PathVariable int id) throws SQLException {
-        veiculoService.excluirVeiculo(id);
+        veiculoService.deletarVeiculo(id);
         return ResponseEntity.ok("Veículo deletado com sucesso! ID:" + id);
     }
 }
