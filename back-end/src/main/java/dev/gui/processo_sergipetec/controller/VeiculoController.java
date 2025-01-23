@@ -24,9 +24,9 @@ public class VeiculoController {
     }
 
     @PostMapping("/cadastrar/carro")
-    public ResponseEntity<String> cadastrarCarro(@RequestBody CarroModel carro) throws SQLException {
+    public ResponseEntity<VeiculoModel> cadastrarCarro(@RequestBody CarroModel carro) throws SQLException {
         carroService.cadastrarCarrro(carro);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Veículo cadastrado");
+        return ResponseEntity.status(HttpStatus.CREATED).body(carro);
     }
 
     @PostMapping("/cadastrar/moto")

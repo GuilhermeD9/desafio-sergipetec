@@ -22,7 +22,8 @@ public class CadastroCarro implements ICadastro {
         this.veiculoService = veiculoService;
     }
 
-    public void cadastrarCarro(CarroModel carro) throws SQLException {
+    @Override
+    public Object cadastrar(CarroModel carro) throws SQLException {
         veiculoService.cadastrarVeiculo(carro);
         String query = "INSERT INTO TB_CARRO (id, quantidade_portas, tipo_combustivel) VALUES (?, ?, ?)";
 
@@ -33,11 +34,11 @@ public class CadastroCarro implements ICadastro {
             statement.setString(3, carro.getTipoCombustivel());
             statement.executeUpdate();
         }
+        return carro;
     }
 
-
     @Override
-    public void atualizar(int id, Object veiculo) throws SQLException {
+    public Object atualizar(int id, Object veiculo) throws SQLException {
         CarroModel carro = (CarroModel) veiculo;
         String queryCarro = "UPDATE TB_CARRO SET quantidade_portas = ?, tipo_combustivel = ? WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
@@ -47,6 +48,7 @@ public class CadastroCarro implements ICadastro {
             statement.setInt(3, id);
             statement.executeUpdate();
         }
+        return veiculo;
     }
 
     @Override
