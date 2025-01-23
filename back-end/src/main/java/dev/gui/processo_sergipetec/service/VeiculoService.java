@@ -17,7 +17,6 @@ public class VeiculoService {
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
              statement.setString(1, veiculo.getModelo());
              statement.setString(2, veiculo.getFabricante());
              statement.setInt(3, veiculo.getAno());
@@ -39,7 +38,6 @@ public class VeiculoService {
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-
             statement.setInt(1, carro.getId());
             statement.setInt(2, carro.getQuantidadePortas());
             statement.setString(3, carro.getTipoCombustivel());
@@ -53,7 +51,6 @@ public class VeiculoService {
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-
             statement.setInt(1, moto.getId());
             statement.setInt(2, moto.getCilindrada());
             statement.executeUpdate();
@@ -71,60 +68,19 @@ public class VeiculoService {
 
             while (rs.next()) {
                     String tipo = rs.getString("tipo");
-                    int id = rs.getInt("id");
-                    String modelo = rs.getString("modelo");
-                    String fabricante = rs.getString("fabricante");
-                    int ano = rs.getInt("ano");
-                    double preco = rs.getDouble("preco");
-
-                    VeiculoModel veiculo = new VeiculoModel() {
-                        {
-                            setId(id);
-                            setModelo(modelo);
-                            setFabricante(fabricante);
-                            setAno(ano);
-                            setPreco(preco);
-                            setTipo(tipo);
-                        }
-                    };
-                    veiculos.add(veiculo);
+                    VeiculoModel veiculo = mapearVeiculo(rs, tipo, connection);
+                    if (veiculo != null) veiculos.add(veiculo);
             }
             return veiculos;
         }
     }
 
-    public VeiculoModel listarVeiculoPorId(int id) throws SQLException {
-        String query = "SELECT * FROM TB_VEICULO WHERE id = ?";
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-
-            statement.setInt(1, id);
-            try (ResultSet rs = statement.executeQuery()) {
-                if (rs.next()) {
-                    String tipo = rs.getString("tipo");
-                    String modelo = rs.getString("modelo");
-                    String fabricante = rs.getString("fabricante");
-                    int ano = rs.getInt("ano");
-                    double preco = rs.getDouble("preco");
-
-                    if (tipo.equals("CarroModel")) {
-                        return listarCarroPorId(id, modelo, fabricante, ano, preco, connection);
-                    } else if (tipo.equals("MotoModel")) {
-                        return listarMotoPorId(id, modelo, fabricante, ano, preco, connection);
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
     public void atualizarVeiculo(int id, VeiculoModel veiculo) throws SQLException {
-        String queryVeiculo = "UPDATE TB_VEICULO SET modelo = ?, fabricante = ?, ano = ?, preco = ? WHERE id = ?";
+        String query = "UPDATE TB_VEICULO SET modelo = ?, fabricante = ?, ano = ?, preco = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection()) {
             // Atualiza os dados comuns do veículo na tabela TB_VEICULO
-            try (PreparedStatement statement = connection.prepareStatement(queryVeiculo)) {
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setString(1, veiculo.getModelo());
                 statement.setString(2, veiculo.getFabricante());
                 statement.setInt(3, veiculo.getAno());
@@ -155,7 +111,6 @@ public class VeiculoService {
         }
     }
 
-
     public void excluirVeiculo(int id) throws SQLException {
         try (Connection connection = DatabaseConnection.getConnection()) {
             try ( PreparedStatement deleteCarro = connection.prepareStatement("DELETE FROM TB_CARRO WHERE id = ?")) {
@@ -175,7 +130,42 @@ public class VeiculoService {
         }
     }
 
-    private CarroModel listarCarroPorId(int id, String modelo, String fabricante, int ano, double preco, Connection connection) throws SQLException {
+    public VeiculoModel listarVeiculoPorId(int id) throws SQLException {
+        String query = "SELECT * FROM TB_VEICULO WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, id);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    String tipo = rs.getString("tipo");
+                    return mapearVeiculo(rs, tipo, connection);
+                }
+            }
+        }
+        return null;
+    }
+
+    private VeiculoModel mapearVeiculo(ResultSet rs, String tipo, Connection connection) throws SQLException {
+        int id = rs.getInt("id");
+        String modelo = rs.getString("modelo");
+        String fabricante = rs.getString("fabricante");
+        int ano = rs.getInt("ano");
+        double preco = rs.getDouble("preco");
+        String tipagem = tipo;
+
+        switch (tipo) {
+            case "CarroModel":
+                return DetalharCarro(id, modelo, fabricante, ano, preco, tipo, connection);
+            case "MotoModel":
+                return DetalharMoto(id, modelo, fabricante, ano, preco, tipo, connection);
+            default:
+                return null;
+        }
+    }
+
+    private CarroModel DetalharCarro(int id, String modelo, String fabricante, int ano, double preco, String tipo, Connection connection) throws SQLException {
         String queryCarro = "SELECT * FROM TB_CARRO WHERE id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(queryCarro)) {
@@ -184,14 +174,14 @@ public class VeiculoService {
                 if (rs.next()) {
                     int quantidadePortas = rs.getInt("quantidade_portas");
                     String tipoCombustivel = rs.getString("tipo_combustivel");
-                    return new CarroModel(id, modelo, fabricante, ano, preco, quantidadePortas, tipoCombustivel);
+                    return new CarroModel(id, modelo, fabricante, ano, preco, tipo, quantidadePortas, tipoCombustivel);
                 }
             }
         }
         return null;
     }
 
-    private MotoModel listarMotoPorId(int id, String modelo, String fabricante, int ano, double preco, Connection connection) throws SQLException {
+    private MotoModel DetalharMoto(int id, String modelo, String fabricante, int ano, double preco, String tipo, Connection connection) throws SQLException {
         String queryMoto = "SELECT * FROM TB_MOTO WHERE id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(queryMoto)) {
@@ -199,7 +189,7 @@ public class VeiculoService {
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     int cilindrada = rs.getInt("cilindrada");
-                    return new MotoModel(id, modelo, fabricante, ano, preco, cilindrada);
+                    return new MotoModel(id, modelo, fabricante, ano, preco, tipo, cilindrada);
                 }
             }
         }

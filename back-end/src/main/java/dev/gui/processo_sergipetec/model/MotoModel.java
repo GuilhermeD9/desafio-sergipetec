@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 public class MotoModel extends VeiculoModel {
     private int cilindrada;
 
-    public MotoModel(int id, String modelo, String fabricante, int ano, double preco, int cilindrada) {
+    public MotoModel(int id, String modelo, String fabricante, int ano, double preco, String tipo, int cilindrada) {
+        super(id, modelo, fabricante, ano, preco, tipo);
+        this.cilindrada = cilindrada;
     }
 }
