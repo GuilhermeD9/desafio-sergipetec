@@ -1,5 +1,6 @@
 package dev.gui.processo_sergipetec.service;
 
+import dev.gui.processo_sergipetec.cadastro.CadastroCarro;
 import dev.gui.processo_sergipetec.connection.DatabaseConnection;
 import dev.gui.processo_sergipetec.model.CarroModel;
 import dev.gui.processo_sergipetec.model.MotoModel;
@@ -12,7 +13,8 @@ import java.util.List;
 
 @Service
 public class VeiculoService {
-    private void cadastrarVeiculo(VeiculoModel veiculo) throws SQLException {
+
+    public void cadastrarVeiculo(VeiculoModel veiculo) throws SQLException {
         String query = "INSERT INTO TB_VEICULO (modelo, fabricante, ano, preco, tipo) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -29,19 +31,6 @@ public class VeiculoService {
                      veiculo.setId(keys.getInt(1));
                  }
              }
-        }
-    }
-
-    public void cadastrarCarro(CarroModel carro) throws SQLException {
-        cadastrarVeiculo(carro);
-        String query = "INSERT INTO TB_CARRO (id, quantidade_portas, tipo_combustivel) VALUES (?, ?, ?)";
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, carro.getId());
-            statement.setInt(2, carro.getQuantidadePortas());
-            statement.setString(3, carro.getTipoCombustivel());
-            statement.executeUpdate();
         }
     }
 
@@ -156,29 +145,11 @@ public class VeiculoService {
         String tipagem = tipo;
 
         switch (tipo) {
-            case "CarroModel":
-                return DetalharCarro(id, modelo, fabricante, ano, preco, tipo, connection);
             case "MotoModel":
                 return DetalharMoto(id, modelo, fabricante, ano, preco, tipo, connection);
             default:
                 return null;
         }
-    }
-
-    private CarroModel DetalharCarro(int id, String modelo, String fabricante, int ano, double preco, String tipo, Connection connection) throws SQLException {
-        String queryCarro = "SELECT * FROM TB_CARRO WHERE id = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(queryCarro)) {
-            statement.setInt(1, id);
-            try (ResultSet rs = statement.executeQuery()) {
-                if (rs.next()) {
-                    int quantidadePortas = rs.getInt("quantidade_portas");
-                    String tipoCombustivel = rs.getString("tipo_combustivel");
-                    return new CarroModel(id, modelo, fabricante, ano, preco, tipo, quantidadePortas, tipoCombustivel);
-                }
-            }
-        }
-        return null;
     }
 
     private MotoModel DetalharMoto(int id, String modelo, String fabricante, int ano, double preco, String tipo, Connection connection) throws SQLException {

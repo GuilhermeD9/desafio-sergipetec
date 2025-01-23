@@ -3,6 +3,7 @@ package dev.gui.processo_sergipetec.controller;
 import dev.gui.processo_sergipetec.model.CarroModel;
 import dev.gui.processo_sergipetec.model.MotoModel;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
+import dev.gui.processo_sergipetec.service.IncluirCarroService;
 import dev.gui.processo_sergipetec.service.VeiculoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +16,16 @@ import java.util.List;
 @RequestMapping("/veiculos")
 public class VeiculoController {
     private final VeiculoService veiculoService;
+    private final IncluirCarroService carroService;
 
-    public VeiculoController(VeiculoService veiculoService) {
+    public VeiculoController(VeiculoService veiculoService, IncluirCarroService carroService) {
         this.veiculoService = veiculoService;
+        this.carroService = carroService;
     }
 
     @PostMapping("/cadastrar/carro")
     public ResponseEntity<String> cadastrarCarro(@RequestBody CarroModel carro) throws SQLException {
-        veiculoService.cadastrarCarro(carro);
+        carroService.cadastrarCarrro(carro);
         return ResponseEntity.status(HttpStatus.CREATED).body("Veículo cadastrado");
     }
 
