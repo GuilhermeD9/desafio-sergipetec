@@ -1,0 +1,58 @@
+CÓDIGOS PARA CRIAÇÃO DO BD
+
+Criação ------------------------------------
+
+create database db_frota;
+
+CREATE TABLE TB_VEICULO (
+	id SERIAL PRIMARY KEY,
+	modelo VARCHAR(255) NOT NULL,
+	fabricante VARCHAR(255) NOT NULL,
+	cor VARCHAR(50) NOT NULL,
+	ano INT NOT NULL,
+	preco FLOAT NOT NULL,
+	tipo VARCHAR(50)
+);
+
+
+CREATE TABLE TB_CARRO (
+	id INT PRIMARY KEY,
+	quantidade_portas INT NOT NULL,
+	tipo_combustivel VARCHAR(25) NOT NULL,
+	FOREIGN KEY (id) REFERENCES TB_VEICULO(id)
+);
+
+CREATE TABLE TB_MOTO (
+	id INT PRIMARY KEY,
+	cilindrada INT NOT NULL,
+	FOREIGN KEY (id) REFERENCES TB_VEICULO(id)
+);
+
+
+Inserção ------------------------------------------
+
+INSERT INTO TB_VEICULO (modelo, fabricante, cor, ano, preco, tipo) VALUES
+('Fusca', 'Volkswagen', 'Azul', 1968, 25000, 'Carro'),
+('Civic', 'Honda', 'Preto', 2020, 100000, 'Carro'),
+('Twister', 'Honda', 'Vermelha', 2022, 25000, 'Moto'),
+('CB500', 'Honda', 'Preta', 2021, 35000, 'Moto'),
+('Gol', 'Volkswagen', 'Branco', 2018, 45000, 'Carro'),
+('Maverick', 'Ford', 'Verde', 1975, 55000, 'Carro'),
+('XRE 300', 'Honda', 'Preta', 2020, 29000, 'Moto'),
+('CR-V', 'Honda', 'Prata', 2021, 120000, 'Carro'),
+('CBR 1000RR', 'Honda', 'Azul', 2022, 80000, 'Moto'),
+('Hilux', 'Toyota', 'Cinza', 2022, 150000, 'Carro');
+
+INSERT INTO TB_CARRO (id, quantidade_portas, tipo_combustivel) VALUES
+(1, 4, 'Gasolina'),
+(2, 4, 'Flex'),
+(5, 4, 'Flex'),
+(6, 2, 'Gasolina'),
+(8, 4, 'Flex'),
+(10, 4, 'Diesel');
+
+INSERT INTO TB_MOTO (id, cilindrada) VALUES
+(3, 250),
+(4, 500),
+(7, 300),
+(9, 1000);
