@@ -8,8 +8,6 @@ import dev.gui.processo_sergipetec.model.VeiculoModel;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class CadastroVeiculo implements ICadastro {
@@ -23,13 +21,16 @@ public class CadastroVeiculo implements ICadastro {
              statement.setString(2, veiculo.getFabricante());
              statement.setInt(3, veiculo.getAno());
              statement.setDouble(4, veiculo.getPreco());
-             statement.setString(5, veiculo.getClass().getSimpleName());
+             statement.setString(5, veiculo.getClass().getSimpleName().replace("Model",""));
              statement.executeUpdate();
 
              try (ResultSet keys = statement.getGeneratedKeys()) {
                  if (keys.next()) {
                      veiculo.setId(keys.getInt(1));
                  }
+             } catch (SQLException e) {
+                 System.out.println("Erro ao cadastrar o veiculo: " + e.getMessage());
+                 throw new RuntimeException("Erro ao cadastrar o veículo. Por favor, tente novamente.");
              }
         }
     }
@@ -38,61 +39,39 @@ public class CadastroVeiculo implements ICadastro {
     public Object atualizar(int id, VeiculoModel veiculo) throws SQLException {
         String query = "UPDATE TB_VEICULO SET modelo = ?, fabricante = ?, ano = ?, preco = ? WHERE id = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setString(1, veiculo.getModelo());
-                statement.setString(2, veiculo.getFabricante());
-                statement.setInt(3, veiculo.getAno());
-                statement.setDouble(4, veiculo.getPreco());
-                statement.setInt(5, id);
-                statement.executeUpdate();
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, veiculo.getModelo());
+            statement.setString(2, veiculo.getFabricante());
+            statement.setInt(3, veiculo.getAno());
+            statement.setDouble(4, veiculo.getPreco());
+            statement.setInt(5, id);
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected == 0) {
+                System.out.println("Nenhum veículo encontrado com o ID: " + id);
+                throw new RuntimeException("Erro: Nenhum veículo encontrado com o id fornecido");
             }
+        } catch (SQLException e) {
+            System.out.println("Erro ao atualizar o veículo: " + e.getMessage());
         }
         return veiculo;
     }
 
     @Override
     public void deletar(int id) throws SQLException {
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            try ( PreparedStatement deleteVeiculo = connection.prepareStatement("DELETE FROM TB_VEICULO WHERE id = ?")) {
-                deleteVeiculo.setInt(1, id);
-                deleteVeiculo.executeUpdate();
-            }
-        }
-    }
-
-    public List<VeiculoModel> listarVeiculos() throws SQLException {
-        String query = "SELECT * FROM TB_VEICULO";
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet rs = statement.executeQuery()) {
-            List<VeiculoModel> veiculos = new ArrayList<>();
-
-            while (rs.next()) {
-                String tipo = rs.getString("tipo");
-                VeiculoModel veiculo = mapearVeiculo(rs, tipo, connection);
-                if (veiculo != null) veiculos.add(veiculo);
-            }
-            return veiculos;
-        }
-    }
-
-    public VeiculoModel listarVeiculoPorId(int id) throws SQLException {
-        String query = "SELECT * FROM TB_VEICULO WHERE id = ?";
+        String query = "DELETE FROM TB_VEICULO WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-
             statement.setInt(1, id);
-            try (ResultSet rs = statement.executeQuery()) {
-                if (rs.next()) {
-                    String tipo = rs.getString("tipo");
-                    return mapearVeiculo(rs, tipo, connection);
-                }
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected == 0) {
+                System.out.println("Nenhum veículo encontrado com o ID: " + id);
+                throw new RuntimeException("Erro: Nenhum veículo encontrado com o id fornecido.");
             }
+        } catch (SQLException e) {
+            System.out.println("Erro ao deletar o veículo: " + e.getMessage());
         }
-        return null;
     }
 
     protected VeiculoModel mapearVeiculo(ResultSet rs, String tipo, Connection connection) throws SQLException {
@@ -101,12 +80,11 @@ public class CadastroVeiculo implements ICadastro {
         String fabricante = rs.getString("fabricante");
         int ano = rs.getInt("ano");
         double preco = rs.getDouble("preco");
-        String tipagem = tipo;
 
         switch (tipo) {
-            case "CarroModel":
+            case "Carro":
                 return DetalharCarro(id, modelo, fabricante, ano, preco, tipo, connection);
-            case "MotoModel":
+            case "Moto":
                 return DetalharMoto(id, modelo, fabricante, ano, preco, tipo, connection);
             default:
                 return null;

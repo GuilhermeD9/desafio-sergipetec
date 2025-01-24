@@ -66,4 +66,41 @@ public class BuscaRepository extends CadastroVeiculo {
             return veiculos;
         }
     }
+
+    public List<VeiculoModel> listarVeiculos() throws SQLException {
+        String query = "SELECT * FROM TB_VEICULO";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet rs = statement.executeQuery()) {
+            List<VeiculoModel> veiculos = new ArrayList<>();
+
+            while (rs.next()) {
+                String tipo = rs.getString("tipo");
+                VeiculoModel veiculo = mapearVeiculo(rs, tipo, connection);
+                if (veiculo != null) veiculos.add(veiculo);
+            }
+            return veiculos;
+        }
+    }
+
+    public VeiculoModel listarVeiculoPorId(int id) throws SQLException {
+        String query = "SELECT * FROM TB_VEICULO WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, id);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    String tipo = rs.getString("tipo");
+                    return mapearVeiculo(rs, tipo, connection);
+                } else {
+                    throw new RuntimeException("Veiculo com o ID " + id + " não encontrado");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar o veículo por ID no BD.");
+        }
+    }
 }

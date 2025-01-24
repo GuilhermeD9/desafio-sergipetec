@@ -25,11 +25,15 @@ public class IncluirVeiculoService {
     }
 
     public List<VeiculoModel> buscarTodosVeiculos() throws SQLException {
-        return cadastroVeiculo.listarVeiculos();
+        return buscaRepository.listarVeiculos();
     }
 
     public VeiculoModel buscarVeiculoPorId(int id) throws SQLException {
-        return cadastroVeiculo.listarVeiculoPorId(id);
+        return buscaRepository.listarVeiculoPorId(id);
+    }
+
+    public List<VeiculoModel> buscaPersonalizada(String tipo, String modelo, Integer ano) throws SQLException {
+        return buscaRepository.consultarVeiculos(tipo, modelo, ano);
     }
 
     public Object atualizarVeiculo(int id, VeiculoModel veiculo) throws SQLException {
@@ -40,9 +44,5 @@ public class IncluirVeiculoService {
         cadastroCarro.deletar(id);
         cadastroMoto.deletar(id);
         cadastroVeiculo.deletar(id);
-    }
-
-    public List<VeiculoModel> buscaPersonalizada(String tipo, String modelo, Integer ano) throws SQLException {
-        return buscaRepository.consultarVeiculos(tipo, modelo, ano);
     }
 }
