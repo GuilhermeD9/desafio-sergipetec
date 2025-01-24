@@ -3,7 +3,7 @@ package dev.gui.processo_sergipetec.repository;
 import dev.gui.processo_sergipetec.cadastro.CadastroVeiculo;
 import dev.gui.processo_sergipetec.connection.DatabaseConnection;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,20 +12,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Repository
 public class BuscaRepository extends CadastroVeiculo {
 
-    public List<VeiculoModel> consultarVeiculos(String tipo, String modelo, Integer ano) throws SQLException {
+    // Faz a consulta personalizada pelos parametros
+    public List<VeiculoModel> consultarVeiculos(String tipo, String modelo, String cor, Integer ano) throws SQLException {
         String query = "SELECT * FROM TB_VEICULO WHERE 1=1";
         List<Object> parametros = new ArrayList<>();
 
         if (tipo != null) {
             switch (tipo.toLowerCase()) {
                 case "carro" :
-                    tipo = "CarroModel";
+                    tipo = "Carro";
                     break;
                 case "moto" :
-                    tipo = "MotoModel";
+                    tipo = "Moto";
                     break;
                 default:
                     throw new IllegalArgumentException("Tipo de veículo inválido: " + tipo);
@@ -34,14 +35,14 @@ public class BuscaRepository extends CadastroVeiculo {
             parametros.add(tipo);
         }
         if (modelo != null) {
-            query += " AND modelo = ?";
-            parametros.add(modelo);
+            query += " AND LOWER(modelo) = ?"; // O LOWER é para evitar problemas com caracteres maiúsculos
+            parametros.add(modelo.toLowerCase());
         }
 
-        /*if (cor != null) {
-            query += " AND cor = ?";
-            parametros.add(cor);
-        }*/
+        if (cor != null) {
+            query += " AND LOWER(cor) = ?";
+            parametros.add(cor.toLowerCase());
+        }
 
         if (ano != null) {
             query += " AND ano = ?";
@@ -50,7 +51,7 @@ public class BuscaRepository extends CadastroVeiculo {
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-
+            // Organiza os parâmetros de busca
             for (int i = 0; i < parametros.size(); i++) {
                 statement.setObject(i + 1, parametros.get(i));
             }
@@ -66,7 +67,7 @@ public class BuscaRepository extends CadastroVeiculo {
             return veiculos;
         }
     }
-
+    // Consulta TODOS os veículos do banco
     public List<VeiculoModel> listarVeiculos() throws SQLException {
         String query = "SELECT * FROM TB_VEICULO";
 
@@ -83,8 +84,8 @@ public class BuscaRepository extends CadastroVeiculo {
             return veiculos;
         }
     }
-
-    public VeiculoModel listarVeiculoPorId(int id) throws SQLException {
+    // Consulta apenas um veículo por meio do ID
+    public VeiculoModel listarVeiculoPorId(int id) {
         String query = "SELECT * FROM TB_VEICULO WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();

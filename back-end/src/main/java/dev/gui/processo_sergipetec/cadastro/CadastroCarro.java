@@ -9,17 +9,17 @@ import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class CadastroCarro extends CadastroVeiculo implements ICadastro {
-    private final CadastroVeiculo cadastroVeiculo;
+    // Restrição dos tipos de combustível
+    private static final Set<String> TIPOS_COMBUSTIVEL = new HashSet<>(Set.of("Gasolina", "Etanol", "Diesel", "Flex"));
 
-    public CadastroCarro(CadastroVeiculo cadastroVeiculo) {
-        this.cadastroVeiculo = cadastroVeiculo;
-    }
-
-    public Object cadastrarCarro(CarroModel carro) throws SQLException {
-        cadastroVeiculo.cadastrarVeiculo(carro); // Puxa a função base de cadastrar um veículo
+    public void cadastrarCarro(CarroModel carro) throws SQLException {
+        validarTipoCombustivel(carro.getTipoCombustivel());
+        cadastrarVeiculo(carro); // Puxa a função base de cadastrar um veículo
         String query = "INSERT INTO TB_CARRO (id, quantidade_portas, tipo_combustivel) VALUES (?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -29,13 +29,14 @@ public class CadastroCarro extends CadastroVeiculo implements ICadastro {
             statement.setString(3, carro.getTipoCombustivel());
             statement.executeUpdate();
         }
-        return carro;
     }
 
     @Override
     public VeiculoModel atualizar(int id, VeiculoModel veiculo) throws SQLException {
-        cadastroVeiculo.atualizar(id, veiculo);
+        atualizar(id, veiculo);
         CarroModel carro = (CarroModel) veiculo;
+        validarTipoCombustivel(carro.getTipoCombustivel());
+
         String queryCarro = "UPDATE TB_CARRO SET quantidade_portas = ?, tipo_combustivel = ? WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(queryCarro)) {
@@ -53,6 +54,12 @@ public class CadastroCarro extends CadastroVeiculo implements ICadastro {
              PreparedStatement deleteCarro = connection.prepareStatement("DELETE FROM TB_CARRO WHERE id = ?")) {
             deleteCarro.setInt(1, id);
             deleteCarro.executeUpdate();
+        }
+    }
+
+    private void validarTipoCombustivel(String tipoCombustivel) {
+        if (!TIPOS_COMBUSTIVEL.contains(tipoCombustivel)) {
+            throw new IllegalArgumentException("Tipo de combustível inválido: " + tipoCombustivel);
         }
     }
 }

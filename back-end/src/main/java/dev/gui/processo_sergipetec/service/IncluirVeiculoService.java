@@ -28,12 +28,12 @@ public class IncluirVeiculoService {
         return buscaRepository.listarVeiculos();
     }
 
-    public VeiculoModel buscarVeiculoPorId(int id) throws SQLException {
+    public VeiculoModel buscarVeiculoPorId(int id)  {
         return buscaRepository.listarVeiculoPorId(id);
     }
 
-    public List<VeiculoModel> buscaPersonalizada(String tipo, String modelo, Integer ano) throws SQLException {
-        return buscaRepository.consultarVeiculos(tipo, modelo, ano);
+    public List<VeiculoModel> buscaPersonalizada(String tipo, String modelo, String cor, Integer ano) throws SQLException {
+        return buscaRepository.consultarVeiculos(tipo, modelo, cor, ano);
     }
 
     public Object atualizarVeiculo(int id, VeiculoModel veiculo) throws SQLException {

@@ -47,16 +47,22 @@ public class VeiculoController {
     @GetMapping("/listar/{id}")
     public ResponseEntity<VeiculoModel> listarVeiculoPorId(@PathVariable int id) throws SQLException {
         VeiculoModel veiculo = veiculoService.buscarVeiculoPorId(id);
-        return ResponseEntity.ok(veiculo);
+        if (veiculo != null) {
+            return ResponseEntity.ok(veiculo);
+        }
+        else {
+            return null;
+        }
     }
 
     @GetMapping("/busca-especifica")
     public ResponseEntity<List<VeiculoModel>> buscaPersonalizada(
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String modelo,
+            @RequestParam(required = false) String cor,
             @RequestParam(required = false) Integer ano) {
         try {
-            List<VeiculoModel> veiculos = veiculoService.buscaPersonalizada(tipo, modelo, ano);
+            List<VeiculoModel> veiculos = veiculoService.buscaPersonalizada(tipo, modelo, cor, ano);
             if (veiculos.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(veiculos);
             }
