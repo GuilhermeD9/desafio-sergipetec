@@ -5,7 +5,6 @@ import dev.gui.processo_sergipetec.model.MotoModel;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
 import dev.gui.processo_sergipetec.service.IncluirCarroService;
 import dev.gui.processo_sergipetec.service.IncluirMotoService;
-import dev.gui.processo_sergipetec.cadastro.CadastroVeiculo;
 import dev.gui.processo_sergipetec.service.IncluirVeiculoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,15 +47,25 @@ public class VeiculoController {
     @GetMapping("/listar/{id}")
     public ResponseEntity<VeiculoModel> listarVeiculoPorId(@PathVariable int id) throws SQLException {
         VeiculoModel veiculo = veiculoService.buscarVeiculoPorId(id);
-        if (veiculo != null) {
-            return ResponseEntity.ok(veiculo);
-        }
-        else {
-            return null;
-        }
+        return ResponseEntity.ok(veiculo);
     }
 
-    @PutMapping("/atualizar/{id}")
+    @GetMapping("/busca-especifica")
+    public ResponseEntity<List<VeiculoModel>> buscaPersonalizada(
+            @RequestParam(required = false) String tipo,
+            @RequestParam(required = false) String modelo,
+            @RequestParam(required = false) Integer ano) {
+        try {
+            List<VeiculoModel> veiculos = veiculoService.buscaPersonalizada(tipo, modelo, ano);
+            if (veiculos.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(veiculos);
+            }
+            return ResponseEntity.ok(veiculos);
+    } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+        @PutMapping("/atualizar/{id}")
     public ResponseEntity<VeiculoModel> atualizarVeiculo(@PathVariable int id, @RequestBody VeiculoModel veiculo) throws SQLException {
         veiculoService.atualizarVeiculo(id, veiculo);
         return ResponseEntity.ok(veiculo);
