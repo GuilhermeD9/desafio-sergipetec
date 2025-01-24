@@ -22,10 +22,10 @@ public class BuscaRepository extends CadastroVeiculo {
         if (tipo != null) {
             switch (tipo.toLowerCase()) {
                 case "carro" :
-                    tipo = "CarroModel";
+                    tipo = "Carro";
                     break;
                 case "moto" :
-                    tipo = "MotoModel";
+                    tipo = "Moto";
                     break;
                 default:
                     throw new IllegalArgumentException("Tipo de veículo inválido: " + tipo);
