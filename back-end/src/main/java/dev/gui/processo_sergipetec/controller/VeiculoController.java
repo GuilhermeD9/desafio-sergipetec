@@ -3,6 +3,7 @@ package dev.gui.processo_sergipetec.controller;
 import dev.gui.processo_sergipetec.model.CarroModel;
 import dev.gui.processo_sergipetec.model.MotoModel;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
+import dev.gui.processo_sergipetec.service.BuscaService;
 import dev.gui.processo_sergipetec.service.IncluirCarroService;
 import dev.gui.processo_sergipetec.service.IncluirMotoService;
 import dev.gui.processo_sergipetec.service.IncluirVeiculoService;
@@ -19,11 +20,13 @@ public class VeiculoController {
     private final IncluirVeiculoService veiculoService;
     private final IncluirCarroService carroService;
     private final IncluirMotoService motoService;
+    private final BuscaService buscaService;
 
-    public VeiculoController(IncluirVeiculoService veiculoService, IncluirCarroService carroService, IncluirMotoService motoService) {
+    public VeiculoController(IncluirVeiculoService veiculoService, IncluirCarroService carroService, IncluirMotoService motoService, BuscaService buscaService) {
         this.veiculoService = veiculoService;
         this.carroService = carroService;
         this.motoService = motoService;
+        this.buscaService = buscaService;
     }
 
     @PostMapping("/cadastrar/carro")
@@ -40,13 +43,13 @@ public class VeiculoController {
 
     @GetMapping("/listartodos")
     public ResponseEntity<List<VeiculoModel>> listarVeiculos() throws SQLException {
-        List<VeiculoModel> veiculos = veiculoService.buscarTodosVeiculos();
+        List<VeiculoModel> veiculos = buscaService.buscarTodosVeiculos();
         return ResponseEntity.ok(veiculos);
     }
 
     @GetMapping("/listar/{id}")
     public ResponseEntity<VeiculoModel> listarVeiculoPorId(@PathVariable int id) throws SQLException {
-        VeiculoModel veiculo = veiculoService.buscarVeiculoPorId(id);
+        VeiculoModel veiculo = buscaService.buscarVeiculoPorId(id);
         if (veiculo != null) {
             return ResponseEntity.ok(veiculo);
         }
@@ -62,7 +65,7 @@ public class VeiculoController {
             @RequestParam(required = false) String cor,
             @RequestParam(required = false) Integer ano) {
         try {
-            List<VeiculoModel> veiculos = veiculoService.buscaPersonalizada(tipo, modelo, cor, ano);
+            List<VeiculoModel> veiculos = buscaService.buscaPersonalizada(tipo, modelo, cor, ano);
             if (veiculos.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(veiculos);
             }
