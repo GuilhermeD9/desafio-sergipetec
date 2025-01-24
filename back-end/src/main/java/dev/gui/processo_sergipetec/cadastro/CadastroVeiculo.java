@@ -13,15 +13,16 @@ import java.sql.*;
 public class CadastroVeiculo implements ICadastro {
 
     protected void cadastrarVeiculo(VeiculoModel veiculo) throws SQLException {
-        String query = "INSERT INTO TB_VEICULO (modelo, fabricante, ano, preco, tipo) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO TB_VEICULO (modelo, fabricante, cor, ano, preco, tipo) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
              statement.setString(1, veiculo.getModelo());
              statement.setString(2, veiculo.getFabricante());
-             statement.setInt(3, veiculo.getAno());
-             statement.setDouble(4, veiculo.getPreco());
-             statement.setString(5, veiculo.getClass().getSimpleName().replace("Model",""));
+             statement.setString(3, veiculo.getCor());
+             statement.setInt(4, veiculo.getAno());
+             statement.setDouble(5, veiculo.getPreco());
+             statement.setString(6, veiculo.getClass().getSimpleName().replace("Model",""));
              statement.executeUpdate();
 
              try (ResultSet keys = statement.getGeneratedKeys()) {
@@ -37,15 +38,16 @@ public class CadastroVeiculo implements ICadastro {
 
     @Override
     public Object atualizar(int id, VeiculoModel veiculo) throws SQLException {
-        String query = "UPDATE TB_VEICULO SET modelo = ?, fabricante = ?, ano = ?, preco = ? WHERE id = ?";
+        String query = "UPDATE TB_VEICULO SET modelo = ?, fabricante = ?, cor = ?, ano = ?, preco = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, veiculo.getModelo());
             statement.setString(2, veiculo.getFabricante());
-            statement.setInt(3, veiculo.getAno());
-            statement.setDouble(4, veiculo.getPreco());
-            statement.setInt(5, id);
+            statement.setString(3, veiculo.getCor());
+            statement.setInt(4, veiculo.getAno());
+            statement.setDouble(5, veiculo.getPreco());
+            statement.setInt(6, id);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected == 0) {
                 System.out.println("Nenhum veículo encontrado com o ID: " + id);
@@ -78,20 +80,21 @@ public class CadastroVeiculo implements ICadastro {
         int id = rs.getInt("id");
         String modelo = rs.getString("modelo");
         String fabricante = rs.getString("fabricante");
+        String cor = rs.getString("cor");
         int ano = rs.getInt("ano");
         double preco = rs.getDouble("preco");
 
         switch (tipo) {
             case "Carro":
-                return DetalharCarro(id, modelo, fabricante, ano, preco, tipo, connection);
+                return DetalharCarro(id, modelo, fabricante, cor, ano, preco, tipo, connection);
             case "Moto":
-                return DetalharMoto(id, modelo, fabricante, ano, preco, tipo, connection);
+                return DetalharMoto(id, modelo, fabricante, cor, ano, preco, tipo, connection);
             default:
                 return null;
         }
     }
 
-    private MotoModel DetalharMoto(int id, String modelo, String fabricante, int ano, double preco, String tipo, Connection connection) throws SQLException {
+    private MotoModel DetalharMoto(int id, String modelo, String fabricante, String cor, int ano, double preco, String tipo, Connection connection) throws SQLException {
         String queryMoto = "SELECT * FROM TB_MOTO WHERE id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(queryMoto)) {
@@ -99,14 +102,14 @@ public class CadastroVeiculo implements ICadastro {
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     int cilindrada = rs.getInt("cilindrada");
-                    return new MotoModel(id, modelo, fabricante, ano, preco, tipo, cilindrada);
+                    return new MotoModel(id, modelo, fabricante, cor, ano, preco, tipo, cilindrada);
                 }
             }
         }
         return null;
     }
 
-    private CarroModel DetalharCarro(int id, String modelo, String fabricante, int ano, double preco, String tipo, Connection connection) throws SQLException {
+    private CarroModel DetalharCarro(int id, String modelo, String fabricante, String cor, int ano, double preco, String tipo, Connection connection) throws SQLException {
         String queryCarro = "SELECT * FROM TB_CARRO WHERE id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(queryCarro)) {
@@ -115,7 +118,7 @@ public class CadastroVeiculo implements ICadastro {
                 if (rs.next()) {
                     int quantidadePortas = rs.getInt("quantidade_portas");
                     String tipoCombustivel = rs.getString("tipo_combustivel");
-                    return new CarroModel(id, modelo, fabricante, ano, preco, tipo, quantidadePortas, tipoCombustivel);
+                    return new CarroModel(id, modelo, fabricante, cor, ano, preco, tipo, quantidadePortas, tipoCombustivel);
                 }
             }
         }

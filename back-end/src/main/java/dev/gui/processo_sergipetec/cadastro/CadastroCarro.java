@@ -14,17 +14,12 @@ import java.util.Set;
 
 @Service
 public class CadastroCarro extends CadastroVeiculo implements ICadastro {
-    private final CadastroVeiculo cadastroVeiculo;
-
+    // Restrição dos tipos de combustível
     private static final Set<String> TIPOS_COMBUSTIVEL = new HashSet<>(Set.of("Gasolina", "Etanol", "Diesel", "Flex"));
 
-    public CadastroCarro(CadastroVeiculo cadastroVeiculo) {
-        this.cadastroVeiculo = cadastroVeiculo;
-    }
-
-    public Object cadastrarCarro(CarroModel carro) throws SQLException {
+    public void cadastrarCarro(CarroModel carro) throws SQLException {
         validarTipoCombustivel(carro.getTipoCombustivel());
-        cadastroVeiculo.cadastrarVeiculo(carro); // Puxa a função base de cadastrar um veículo
+        cadastrarVeiculo(carro); // Puxa a função base de cadastrar um veículo
         String query = "INSERT INTO TB_CARRO (id, quantidade_portas, tipo_combustivel) VALUES (?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -34,12 +29,11 @@ public class CadastroCarro extends CadastroVeiculo implements ICadastro {
             statement.setString(3, carro.getTipoCombustivel());
             statement.executeUpdate();
         }
-        return carro;
     }
 
     @Override
     public VeiculoModel atualizar(int id, VeiculoModel veiculo) throws SQLException {
-        cadastroVeiculo.atualizar(id, veiculo);
+        atualizar(id, veiculo);
         CarroModel carro = (CarroModel) veiculo;
         validarTipoCombustivel(carro.getTipoCombustivel());
 

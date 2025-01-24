@@ -11,15 +11,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 @Service
-public class CadastroMoto implements ICadastro {
-    private final CadastroVeiculo cadastroVeiculo;
-
-    public CadastroMoto(CadastroVeiculo cadastroVeiculo) {
-        this.cadastroVeiculo = cadastroVeiculo;
-    }
+public class CadastroMoto extends CadastroVeiculo implements ICadastro {
 
     public void cadastrarMoto(MotoModel moto) throws SQLException {
-        cadastroVeiculo.cadastrarVeiculo(moto);
+        cadastrarVeiculo(moto);
         String query = "INSERT INTO TB_MOTO (id, cilindrada) VALUES (?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -32,7 +27,7 @@ public class CadastroMoto implements ICadastro {
 
     @Override
     public VeiculoModel atualizar(int id, VeiculoModel veiculo) throws SQLException {
-        cadastroVeiculo.atualizar(id, veiculo);
+        atualizar(id, veiculo);
         MotoModel moto = (MotoModel) veiculo;
         String queryMoto = "UPDATE TB_MOTO SET cilindrada = ? WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
