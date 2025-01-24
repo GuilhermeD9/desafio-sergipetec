@@ -56,7 +56,22 @@ public class VeiculoController {
         }
     }
 
-    @PutMapping("/atualizar/{id}")
+    @GetMapping("/busca-especifica")
+    public ResponseEntity<List<VeiculoModel>> buscaPersonalizada(
+            @RequestParam(required = false) String tipo,
+            @RequestParam(required = false) String modelo,
+            @RequestParam(required = false) Integer ano) {
+        try {
+            List<VeiculoModel> veiculos = veiculoService.buscaPersonalizada(tipo, modelo, ano);
+            if (veiculos.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(veiculos);
+            }
+            return ResponseEntity.ok(veiculos);
+    } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+        @PutMapping("/atualizar/{id}")
     public ResponseEntity<VeiculoModel> atualizarVeiculo(@PathVariable int id, @RequestBody VeiculoModel veiculo) throws SQLException {
         veiculoService.atualizarVeiculo(id, veiculo);
         return ResponseEntity.ok(veiculo);
