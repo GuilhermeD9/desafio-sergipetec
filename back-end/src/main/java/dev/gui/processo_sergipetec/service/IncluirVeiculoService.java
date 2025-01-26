@@ -15,25 +15,11 @@ public class IncluirVeiculoService {
     private final CadastroVeiculo cadastroVeiculo;
     private final CadastroCarro cadastroCarro;
     private final CadastroMoto cadastroMoto;
-    private final BuscaRepository buscaRepository;
 
-    public IncluirVeiculoService(CadastroVeiculo cadastroVeiculo, CadastroCarro cadastroCarro, CadastroMoto cadastroMoto, BuscaRepository buscaRepository) {
+    public IncluirVeiculoService(CadastroVeiculo cadastroVeiculo, CadastroCarro cadastroCarro, CadastroMoto cadastroMoto) {
         this.cadastroVeiculo = cadastroVeiculo;
         this.cadastroCarro = cadastroCarro;
         this.cadastroMoto = cadastroMoto;
-        this.buscaRepository = buscaRepository;
-    }
-
-    public List<VeiculoModel> buscarTodosVeiculos() throws SQLException {
-        return buscaRepository.listarVeiculos();
-    }
-
-    public VeiculoModel buscarVeiculoPorId(int id)  {
-        return buscaRepository.listarVeiculoPorId(id);
-    }
-
-    public List<VeiculoModel> buscaPersonalizada(String tipo, String modelo, String cor, Integer ano) throws SQLException {
-        return buscaRepository.consultarVeiculos(tipo, modelo, cor, ano);
     }
 
     public Object atualizarVeiculo(int id, VeiculoModel veiculo) throws SQLException {
