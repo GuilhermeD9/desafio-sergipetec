@@ -70,6 +70,8 @@ function abrirFormularioCadastro() {
             <input type="text" id="modelo" placeholder="Modelo">
             <label for="fabricante">Fabricante:</label>
             <input type="text" id="fabricante" placeholder="Fabricante">
+            <label for="cor">Cor:</label>
+            <input type="text" id="cor" placeholder="Cor">
             <label for="ano">Ano:</label>
             <input type="number" id="ano" placeholder="Ano">
             <label for="preco">Preço:</label>
@@ -81,6 +83,7 @@ function abrirFormularioCadastro() {
         preConfirm: () => {
             const tipo = document.getElementById('tipo-veiculo').value;
             const modelo = document.getElementById('modelo').value;
+            const cor = document.getElementById('cor').value;
             const fabricante = document.getElementById('fabricante').value;
             const ano = document.getElementById('ano').value;
             const preco = document.getElementById('preco').value;
@@ -93,21 +96,44 @@ function abrirFormularioCadastro() {
                 extras.cilindrada = document.getElementById('cilindrada').value;
             }
 
-            return { tipo, modelo, fabricante, ano, preco, ...extras };
+            return { tipo, modelo, cor, fabricante, ano, preco, ...extras };
         }
     }).then(result => {
         if (result.isConfirmed) {
-            const dados = result.value;
-            if (tipo == 'Carro') {
-                url = `${apiBaseUrl}/veiculos/cadastrar-carro`
+            const dados = result.value; // Dados preenchidos
+            const tipo = dados.tipo; // Extrai o tipo do veículo
+            let url;
+
+            // Define a URL com base no tipo do veículo
+            if (tipo === 'Carro') {
+                url = `${apiBaseUrl}/veiculos/cadastrar/carro`;
+            } else if (tipo === 'Moto') {
+                url = `${apiBaseUrl}/veiculos/cadastrar/moto`;
             } else {
-                url = `${apiBaseUrl}/veiculos/cadastrar-moto`
+                Swal.fire('Erro', 'Tipo de veículo inválido.', 'error');
+                return;
             }
-            fetch(`${url}`, {
+
+            // Faz o fetch para o endpoint correspondente
+            fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)
-            }).then(() => carregarVeiculos());
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao cadastrar o veículo.');
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    Swal.fire('Sucesso', 'Veículo cadastrado com sucesso!', 'success');
+                    carregarVeiculos();
+                })
+                .catch(error => {
+                    console.error(error);
+                    Swal.fire('Erro', 'Falha ao cadastrar o veículo.', 'error');
+                });
         }
     });
 }
