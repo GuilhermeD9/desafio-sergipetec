@@ -2,10 +2,12 @@ package dev.gui.processo_sergipetec.service;
 
 import dev.gui.processo_sergipetec.model.VeiculoModel;
 import dev.gui.processo_sergipetec.repository.BuscaRepository;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
 
+@Service
 public class BuscaService {
     private final BuscaRepository buscaRepository;
 
