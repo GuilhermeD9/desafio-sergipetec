@@ -4,38 +4,37 @@ const apiBaseUrl = 'http://localhost:8080';
 document.addEventListener('DOMContentLoaded', filtrarVeiculos);
 
 async function carregarVeiculos(url) {
-    const apiUrl = (url || `${apiBaseUrl}/veiculos/listartodos`);
+    const apiUrl = url || `${apiBaseUrl}/veiculos/listartodos`;
     try {
         const response = await fetch(apiUrl);
-        if (!response.ok) {
-            throw new Error('Erro ao carregar veículos.');
-        }
+        if (!response.ok) throw new Error('Erro ao carregar veículos.');
 
         const veiculos = await response.json();
         console.log('Dados recebidos:', veiculos);
-        const tableBody = document.getElementById('veiculos-table-body');
-        tableBody.innerHTML = '';
 
-        veiculos.forEach(veiculo => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${veiculo.id}</td>
-                <td>${veiculo.modelo}</td>
-                <td>${veiculo.fabricante}</td>
-                <td>${veiculo.cor}</td>
-                <td>${veiculo.ano}</td>
-                <td>${veiculo.tipo}</td>
-                <td class="actions">
-                    <button class="edit" onclick="editarVeiculo(${veiculo.id})">Editar</button>
-                    <button class="delete" onclick="deletarVeiculo(${veiculo.id})">Excluir</button>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
+        const tableBody = document.getElementById('veiculos-table-body');
+        tableBody.innerHTML = veiculos.map(veiculo => criarLinhaTabela(veiculo)).join('');
+
     } catch (error) {
         console.error('Erro:', error);
         Swal.fire('Erro!', 'Veículo(s) não encontrado(s)', 'error')
     }    
+}
+
+function criarLinhaTabela(veiculo) {
+    return `
+        <tr>
+            <td>${veiculo.id}</td>
+            <td>${veiculo.modelo}</td>
+            <td>${veiculo.fabricante}</td>
+            <td>${veiculo.cor}</td>
+            <td>${veiculo.ano}</td>
+            <td>${veiculo.tipo}</td>
+            <td class="actions">
+                <button class="edit" onclick="editarVeiculo(${veiculo.id})">Editar</button>
+                <button class="delete" onclick="deletarVeiculo(${veiculo.id})">Excluir</button>
+            </td>
+        `;
 }
 
 async function filtrarVeiculos() {
@@ -58,7 +57,26 @@ async function filtrarVeiculos() {
 function abrirFormularioCadastro() {
     Swal.fire({
         title: 'Cadastrar Veículo',
-        html: `
+        html: gerarFormularioCadastro(),
+        showCancelButton: true,
+        confirmButtonText: 'Salvar',
+        customClass: {
+            popup: 'popup-class',
+            confirmButton: 'btn-confirm',
+            cancelButton: 'btn-cancel'
+        },
+        preConfirm: obterDadosFormularioCadastro
+    }).then(result => {
+        if (result.isConfirmed) {
+            const dados = result.value;
+            const url = `${apiBaseUrl}/veiculos/cadastrar/${dados.tipo.toLowerCase()}`;
+            salvarVeiculo(url, dados)
+        }
+    });
+}
+
+function gerarFormularioCadastro() {
+    return `
             <div style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
                 <label for="tipo-veiculo" style="font-weight: bold;">Tipo:</label>
                 <select id="tipo-veiculo" onchange="atualizarFormularioCadastro()" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
@@ -84,92 +102,73 @@ function abrirFormularioCadastro() {
 
                 <div id="campos-extras" style="margin-top: 10px;"></div>
             </div>
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'Salvar',
-        customClass: {
-            popup: 'popup-class',
-            confirmButton: 'btn-confirm',
-            cancelButton: 'btn-cancel'
-        },
-        preConfirm: () => {
-            const tipo = document.getElementById('tipo-veiculo').value;
-            const modelo = document.getElementById('modelo').value;
-            const cor = document.getElementById('cor').value;
-            const fabricante = document.getElementById('fabricante').value;
-            const ano = document.getElementById('ano').value;
-            const preco = document.getElementById('preco').value;
+        `;
+}
 
-            if (!tipo || !modelo || !fabricante || !cor || !ano || !preco) {
-                Swal.showValidationMessage('Por favor, preencha todos os campos.');
-                return false;
-            }
+function obterDadosFormularioCadastro() {
+    const tipo = document.getElementById('tipo-veiculo').value;
+    const modelo = document.getElementById('modelo').value;
+    const cor = document.getElementById('cor').value;
+    const fabricante = document.getElementById('fabricante').value;
+    const ano = document.getElementById('ano').value;
+    const preco = document.getElementById('preco').value;
 
-            let extras = {};
-            if (tipo === 'Carro') {
-                const quantidadePortas = document.getElementById('quantidade-portas').value;
-                const tipoCombustivel = document.getElementById('tipo-combustivel').value;
-                if (!quantidadePortas || !tipoCombustivel) {
-                    Swal.showValidationMessage('Por favor, preencha todos os campos extras para Carro.');
-                    return false;
-                }
-                extras = { quantidadePortas, tipoCombustivel };
-            } else if (tipo === 'Moto') {
-                const cilindrada = document.getElementById('cilindrada').value;
-                if (!cilindrada) {
-                    Swal.showValidationMessage('Por favor, preencha o campo de Cilindrada para Moto.');
-                    return false;
-                }
-                extras = { cilindrada };
-            }
+    if (!tipo || !modelo || !fabricante || !cor || !ano || !preco) {
+        Swal.showValidationMessage('Por favor, preencha todos os campos.');
+        return false;
+    }
 
-            return { tipo, modelo, cor, fabricante, ano, preco, ...extras };
+    let extras = {};
+    if (tipo === 'Carro') {
+        const quantidadePortas = document.getElementById('quantidade-portas').value;
+        const tipoCombustivel = document.getElementById('tipo-combustivel').value;
+        if (!quantidadePortas || !tipoCombustivel) {
+            Swal.showValidationMessage('Por favor, preencha todos os campos extras para Carro.');
+            return false;
         }
-    }).then(result => {
-        if (result.isConfirmed) {
-            const dados = result.value;
-            const tipo = dados.tipo;
-            let url;
-
-            if (tipo === 'Carro') {
-                url = `${apiBaseUrl}/veiculos/cadastrar/carro`;
-            } else if (tipo === 'Moto') {
-                url = `${apiBaseUrl}/veiculos/cadastrar/moto`;
-            } else {
-                Swal.fire('Erro', 'Tipo de veículo inválido.', 'error');
-                return;
-            }
-
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dados)
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao cadastrar o veículo.');
-                    }
-                    return response.json();
-                })
-                .then(() => {
-                    Swal.fire('Sucesso', 'Veículo cadastrado com sucesso!', 'success');
-                    carregarVeiculos();
-                })
-                .catch(error => {
-                    console.error(error);
-                    Swal.fire('Erro', 'Falha ao cadastrar o veículo.', 'error');
-                });
+        extras = { quantidadePortas, tipoCombustivel };
+    } else if (tipo === 'Moto') {
+        const cilindrada = document.getElementById('cilindrada').value;
+        if (!cilindrada) {
+            Swal.showValidationMessage('Por favor, preencha o campo de Cilindrada para Moto.');
+            return false;
         }
-    });
+        extras = { cilindrada };
+    }
+
+    return { tipo, modelo, cor, fabricante, ano, preco, ...extras };
+}
+
+function salvarVeiculo(url, dados) {
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao cadastrar o veículo.');
+            }
+            return response.json();
+        })
+        .then(() => {
+            Swal.fire('Sucesso', 'Veículo cadastrado com sucesso!', 'success');
+            carregarVeiculos();
+        })
+        .catch(error => {
+            console.error(error);
+            Swal.fire('Erro', 'Falha ao cadastrar o veículo.', 'error');
+        });
 }
 
 function atualizarFormularioCadastro() {
     const tipo = document.getElementById('tipo-veiculo').value;
     const camposExtras = document.getElementById('campos-extras');
-    camposExtras.innerHTML = '';
+    camposExtras.innerHTML = tipo === 'Carro' ? gerarCamposExtrasCarro() : tipo === 'Moto' ? gerarCamposExtrasMoto() : '';
+}
 
-    if (tipo === 'Carro') {
-        camposExtras.innerHTML = `
+function gerarCamposExtrasCarro() {
+    return `
             <label for="quantidade-portas" style="font-weight: bold;">Quantidade de Portas:</label>
             <input type="number" id="quantidade-portas" placeholder="Portas" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
             <br>
@@ -181,35 +180,107 @@ function atualizarFormularioCadastro() {
                 <option value="Diesel">Diesel</option>
             </select>
         `;
-    } else if (tipo === 'Moto') {
-        camposExtras.innerHTML = `
+}
+
+function gerarCamposExtrasMoto() {
+    return `
             <label for="cilindrada" style="font-weight: bold;">Cilindrada:</label>
             <input type="number" id="cilindrada" placeholder="Cilindrada" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
         `;
-    }
 }
 
 function editarVeiculo(id) {
-    alert(`Função de editar veículo ainda não implementada para o ID ${id}`);
+    fetch(`${apiBaseUrl}/veiculos/listar/${id}`)
+        .then(response => response.json())
+        .then(veiculo => {
+            Swal.fire({
+                title: 'Editar Veículo',
+                html: gerarFormularioCadastroEdit(veiculo),
+                showCancelButton: true,
+                confirmButtonText: 'Salvar',
+                customClass: {
+                    popup: 'popup-class',
+                    confirmButton: 'btn-confirm',
+                    cancelButton: 'btn-cancel'
+                },
+                preConfirm: obterDadosFormularioCadastro
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const dados = result.value;
+                    console.log('Dados do veículo:', dados);
+                    const url = `${apiBaseUrl}/veiculos/atualizar/${id}`;
+                    fetch(url, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dados)
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Erro ao atualizar o veículo.');
+                            }
+                            return response.json();
+                        })
+                        .then(() => {
+                            Swal.fire('Sucesso', 'Informações atualizadas com sucesso!', 'success');
+                            carregarVeiculos();
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            Swal.fire('Erro', 'Falha ao atualizar o veículo.', 'error');
+                        });
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Erro ao carregar os dados do veículo:', error);
+            Swal.fire('Erro', 'Falha ao carregar os dados do veículo para edição.', 'error');
+        });
 }
 
-function deletarVeiculo(id) {
-    Swal.fire({
-        title: 'Tem certeza que deseja deletar?',
-        text: 'Essa ação não pode ser desfeita.',
+function gerarFormularioCadastroEdit(veiculo) {
+    return `
+        <div style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
+            <label for="tipo-veiculo" style="font-weight: bold;">Tipo:</label>
+            <select id="tipo-veiculo" onchange="atualizarFormularioCadastro()" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="">Selecione</option>
+                <option value="Carro">Carro</option>
+                <option value="Moto">Moto</option>
+            </select>
+            <label for="modelo" style="font-weight: bold;">Modelo:</label>
+            <input type="text" id="modelo" value="${veiculo.modelo}" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+            <label for="fabricante" style="font-weight: bold;">Fabricante:</label>
+            <input type="text" id="fabricante" value="${veiculo.fabricante}" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+            <label for="cor" style="font-weight: bold;">Cor:</label>
+            <input type="text" id="cor" value="${veiculo.cor}" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+            <label for="ano" style="font-weight: bold;">Ano:</label>
+            <input type="number" id="ano" value="${veiculo.ano}" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+            <label for="preco" style="font-weight: bold;">Preço:</label>
+            <input type="number" id="preco" value="${veiculo.preco}" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+            <div id="campos-extras" style="margin-top: 10px;"></div>
+        </div>
+    `;
+}
+
+async function deletarVeiculo(id) {
+    const confirmDelete = await Swal.fire({
+        title: 'Excluir Veículo?',
+        text: 'Você tem certeza que deseja excluir este veículo?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Excluir',
-        cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#d33',
-    }).then(({ isConfirmed }) => {
-        if (isConfirmed) {
-            fetch(`${apiBaseUrl}/veiculos/deletar/${id}`, { method: 'DELETE' })
-            .then(() => {
-                Swal.fire('Excluído!', 'O veículo foi excluído com sucesso.', 'success');
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (confirmDelete.isConfirmed) {
+        fetch(`${apiBaseUrl}/veiculos/deletar/${id}`, { method: 'DELETE' })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao excluir o veículo.');
+                Swal.fire('Sucesso', 'Veículo excluído com sucesso!', 'success');
                 carregarVeiculos();
             })
-            .catch(() => Swal.fire('Erro!', 'Não foi possível excluir o veículo.', 'error'));
-        }
-    });
+            .catch(error => {
+                console.error('Erro ao excluir veículo:', error);
+                Swal.fire('Erro', 'Falha ao excluir o veículo.', 'error');
+            });
+    }
 }
