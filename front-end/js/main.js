@@ -23,18 +23,65 @@ async function carregarVeiculos(url) {
 
 function criarLinhaTabela(veiculo) {
     return `
-        <tr>
-            <td>${veiculo.id}</td>
-            <td>${veiculo.modelo}</td>
-            <td>${veiculo.fabricante}</td>
-            <td>${veiculo.cor}</td>
-            <td>${veiculo.ano}</td>
-            <td>${veiculo.tipo}</td>
-            <td class="actions">
-                <button class="edit" onclick="editarVeiculo(${veiculo.id})">Editar</button>
-                <button class="delete" onclick="deletarVeiculo(${veiculo.id})">Excluir</button>
-            </td>
+            <tr>
+                <td>${veiculo.id}</td>
+                <td>${veiculo.modelo}</td>
+                <td>${veiculo.fabricante}</td>
+                <td>${veiculo.cor}</td>
+                <td>${veiculo.ano}</td>
+                <td>${veiculo.tipo}</td>
+                <td class="actions">
+                    <button class="edit" onclick="editarVeiculo(${veiculo.id})">Editar</button>
+                    <button class="delete" onclick="deletarVeiculo(${veiculo.id})">Excluir</button>
+                    <button class="details" onclick="detalharVeiculo(${veiculo.id})">Detalhes</button>
+                </td>
+            </tr>    
         `;
+}
+
+async function detalharVeiculo(id) {
+    try {
+        const response = await fetch(`${apiBaseUrl}/veiculos/listar/${id}`);
+        if (!response.ok) throw new Error('Erro ao carregar detalhes do veículo');
+
+        const veiculo = await response.json();
+        console.log('Detalhes do veículo:', veiculo);
+
+        let detalhes = `
+            <h3>Veículo Detalhado</h3>
+            <p><strong>ID:</strong> ${veiculo.id}</p>
+            <p><strong>Modelo:</strong> ${veiculo.modelo}</p>
+            <p><strong>Fabricante:</strong> ${veiculo.fabricante}</p>
+            <p><strong>Cor:</strong> ${veiculo.cor}</p>
+            <p><strong>Ano:</strong> ${veiculo.ano}</p>
+            <p><strong>Tipo:</strong> ${veiculo.tipo}</p>
+            <p><strong>Preço: R$</strong>${veiculo.preco}</p>
+        `;
+
+        if (veiculo.tipo === 'Carro') {
+            detalhes += `
+                <p><strong>Quantidade de Portas:</strong> ${veiculo.quantidadePortas}</p>
+                <p><strong>Tipo de Combustível:</strong> ${veiculo.tipoCombustivel}</p>
+            `;
+        } else if (veiculo.tipo == 'Moto') {
+            detalhes += `
+                <p><strong>Cilindrada:</strong> ${veiculo.cilindrada}</p>
+            `;
+        }
+        Swal.fire({
+            title: 'Detalhes do Veículo',
+            html: detalhes,
+            confirmButtonText: 'Fechar',
+            customClass: {
+                popup: 'popup-class',
+                confirmButton: 'btn-confirm'
+            }
+        });
+
+    } catch (error) {
+        console.error('Erro ao carregar os detalhes do veículo:', error);
+        Swal.fire('Erro', 'Falha ao carregar os detalhes do veículo.', 'error');
+    }
 }
 
 async function filtrarVeiculos() {

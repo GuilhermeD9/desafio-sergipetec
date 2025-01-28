@@ -70,6 +70,11 @@ button.add {
     color: white;
 }
 
+button.details {
+    background-color: #0b68a7;
+    color: white;
+}
+
 .filter-container {
     display: flex;
     justify-content: space-between;
