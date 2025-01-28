@@ -15,7 +15,9 @@ import java.util.List;
 @Repository
 public class BuscaRepository extends CadastroVeiculo {
 
-    // Faz a consulta personalizada pelos parametros
+    /* É capaz de fazer a busca de duas formas, passando parâmetros e limitando
+        a busca, ou sem mandar nada retornando tudo do banco.
+     */
     public List<VeiculoModel> consultarVeiculos(String tipo, String modelo, String cor, Integer ano) throws SQLException {
         String query = "SELECT * FROM TB_VEICULO WHERE 1=1";
         List<Object> parametros = new ArrayList<>();
@@ -67,23 +69,7 @@ public class BuscaRepository extends CadastroVeiculo {
             return veiculos;
         }
     }
-    // Consulta TODOS os veículos do banco
-    public List<VeiculoModel> listarVeiculos() throws SQLException {
-        String query = "SELECT * FROM TB_VEICULO";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet rs = statement.executeQuery()) {
-            List<VeiculoModel> veiculos = new ArrayList<>();
-
-            while (rs.next()) {
-                String tipo = rs.getString("tipo");
-                VeiculoModel veiculo = mapearVeiculo(rs, tipo, connection);
-                if (veiculo != null) veiculos.add(veiculo);
-            }
-            return veiculos;
-        }
-    }
     // Consulta apenas um veículo por meio do ID
     public VeiculoModel listarVeiculoPorId(int id) {
         String query = "SELECT * FROM TB_VEICULO WHERE id = ?";

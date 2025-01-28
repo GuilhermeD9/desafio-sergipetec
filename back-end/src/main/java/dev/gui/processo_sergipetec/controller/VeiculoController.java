@@ -41,15 +41,9 @@ public class VeiculoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(moto);
     }
 
-    @GetMapping("/listartodos")
-    public ResponseEntity<List<VeiculoModel>> listarVeiculos() throws SQLException {
-        List<VeiculoModel> veiculos = buscaService.buscarTodosVeiculos();
-        return ResponseEntity.ok(veiculos);
-    }
-
-    @GetMapping("/listar/{id}")
+    @GetMapping("/consultar/{id}")
     public ResponseEntity<VeiculoModel> listarVeiculoPorId(@PathVariable int id) throws SQLException {
-        VeiculoModel veiculo = buscaService.buscarVeiculoPorId(id);
+        VeiculoModel veiculo = buscaService.consultarVeiculoPorId(id);
         if (veiculo != null) {
             return ResponseEntity.ok(veiculo);
         }
@@ -58,14 +52,14 @@ public class VeiculoController {
         }
     }
 
-    @GetMapping("/busca-especifica")
+    @GetMapping("/consultar-veiculos")
     public ResponseEntity<List<VeiculoModel>> buscaPersonalizada(
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String modelo,
             @RequestParam(required = false) String cor,
             @RequestParam(required = false) Integer ano) {
         try {
-            List<VeiculoModel> veiculos = buscaService.buscaPersonalizada(tipo, modelo, cor, ano);
+            List<VeiculoModel> veiculos = buscaService.consultaPersonalizada(tipo, modelo, cor, ano);
             if (veiculos.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(veiculos);
             }
