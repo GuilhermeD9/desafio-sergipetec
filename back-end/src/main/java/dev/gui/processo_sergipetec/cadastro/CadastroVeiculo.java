@@ -10,34 +10,31 @@ import org.springframework.stereotype.Service;
 import java.sql.*;
 
 @Service
-public class CadastroVeiculo implements ICadastro {
+public class CadastroVeiculo<T extends VeiculoModel> implements ICadastro<T> {
 
-    protected void cadastrarVeiculo(VeiculoModel veiculo) throws SQLException {
+    @Override
+    public void cadastrar(T veiculo) throws SQLException {
         String query = "INSERT INTO TB_VEICULO (modelo, fabricante, cor, ano, preco, tipo) VALUES (?, ?, ?, ?, ?, ?)";
-
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-             statement.setString(1, veiculo.getModelo());
-             statement.setString(2, veiculo.getFabricante());
-             statement.setString(3, veiculo.getCor());
-             statement.setInt(4, veiculo.getAno());
-             statement.setDouble(5, veiculo.getPreco());
-             statement.setString(6, veiculo.getClass().getSimpleName().replace("Model",""));
-             statement.executeUpdate();
+            statement.setString(1, veiculo.getModelo());
+            statement.setString(2, veiculo.getFabricante());
+            statement.setString(3, veiculo.getCor());
+            statement.setInt(4, veiculo.getAno());
+            statement.setDouble(5, veiculo.getPreco());
+            statement.setString(6, veiculo.getClass().getSimpleName().replace("Model", ""));
+            statement.executeUpdate();
 
-             try (ResultSet keys = statement.getGeneratedKeys()) {
-                 if (keys.next()) {
-                     veiculo.setId(keys.getInt(1));
-                 }
-             } catch (SQLException e) {
-                 System.out.println("Erro ao cadastrar o veiculo: " + e.getMessage());
-                 throw new RuntimeException("Erro ao cadastrar o veículo. Por favor, tente novamente.");
-             }
+            try (ResultSet keys = statement.getGeneratedKeys()) {
+                if (keys.next()) {
+                    veiculo.setId(keys.getInt(1));
+                }
+            }
         }
     }
 
     @Override
-    public Object atualizar(int id, VeiculoModel veiculo) throws SQLException {
+    public T atualizar(int id, VeiculoModel veiculo) throws SQLException {
         String query = "UPDATE TB_VEICULO SET modelo = ?, fabricante = ?, cor = ?, ano = ?, preco = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -56,7 +53,7 @@ public class CadastroVeiculo implements ICadastro {
         } catch (SQLException e) {
             System.out.println("Erro ao atualizar o veículo: " + e.getMessage());
         }
-        return veiculo;
+        return (T) veiculo;
     }
 
     @Override

@@ -15,6 +15,6 @@ public class IncluirMotoService {
     }
 
     public void cadastrarMoto(MotoModel moto) throws SQLException {
-        cadastroMoto.cadastrarMoto(moto);
+        cadastroMoto.cadastrar(moto);
     }
 }
