@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Frota</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <header>
+        <h1>Gestão de Frota</h1>
+    </header>
+
+    <div class="container">
+        <div class="filter-container">
+            <input type="text" id="filter-modelo" placeholder="Modelo">
+            <input type="text" id="filter-cor" placeholder="Cor">
+            <input type="number" id="filter-ano" placeholder="Ano">
+            <select id="filter-tipo">
+                <option value="">Todos os Tipos</option>
+                <option value="Carro">Carro</option>
+                <option value="Moto">Moto</option>
+            </select>
+            <button onclick="filtrarVeiculos()">Filtrar</button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Modelo</th>
+                        <th>Fabricante</th>
+                        <th>Cor</th>
+                        <th>Ano</th>
+                        <th>Tipo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="veiculos-table-body">
+                    <!-- Dados preenchidos dinamicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <button class="add" onclick="abrirFormularioCadastro()">Adicionar Veículo</button>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>
