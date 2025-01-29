@@ -4,7 +4,8 @@ const apiBaseUrl = 'http://localhost:8080';
 document.addEventListener('DOMContentLoaded', filtrarVeiculos);
 
 async function carregarVeiculos(url) {
-    const apiUrl = url || `${apiBaseUrl}/veiculos/listartodos`;
+    const apiUrl = url || `${apiBaseUrl}/veiculos/consultar-veiculos`;
+
     try {
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error('Erro ao carregar veículos.');
@@ -41,7 +42,7 @@ function criarLinhaTabela(veiculo) {
 
 async function detalharVeiculo(id) {
     try {
-        const response = await fetch(`${apiBaseUrl}/veiculos/listar/${id}`);
+        const response = await fetch(`${apiBaseUrl}/veiculos/consultar/${id}`);
         if (!response.ok) throw new Error('Erro ao carregar detalhes do veículo');
 
         const veiculo = await response.json();
@@ -97,7 +98,7 @@ async function filtrarVeiculos() {
     if (ano) filtros.ano = ano;
 
     const params = new URLSearchParams(filtros).toString();
-    const url = `${apiBaseUrl}/veiculos/busca-especifica?${params}`;
+    const url = `${apiBaseUrl}/veiculos/consultar-veiculos?${params}`;
     await carregarVeiculos(url);
 }
 
@@ -237,7 +238,7 @@ function gerarCamposExtrasMoto() {
 }
 
 function editarVeiculo(id) {
-    fetch(`${apiBaseUrl}/veiculos/listar/${id}`)
+    fetch(`${apiBaseUrl}/veiculos/consultar/${id}`)
         .then(response => response.json())
         .then(veiculo => {
             Swal.fire({

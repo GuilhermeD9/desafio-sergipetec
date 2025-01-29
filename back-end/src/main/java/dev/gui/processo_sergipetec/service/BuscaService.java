@@ -15,15 +15,11 @@ public class BuscaService {
         this.buscaRepository = buscaRepository;
     }
 
-    public List<VeiculoModel> buscarTodosVeiculos() throws SQLException {
-        return buscaRepository.listarVeiculos();
-    }
-
-    public VeiculoModel buscarVeiculoPorId(int id)  {
+    public VeiculoModel consultarVeiculoPorId(int id)  {
         return buscaRepository.listarVeiculoPorId(id);
     }
 
-    public List<VeiculoModel> buscaPersonalizada(String tipo, String modelo, String cor, Integer ano) throws SQLException {
+    public List<VeiculoModel> consultaPersonalizada(String tipo, String modelo, String cor, Integer ano) throws SQLException {
         return buscaRepository.consultarVeiculos(tipo, modelo, cor, ano);
     }
 }

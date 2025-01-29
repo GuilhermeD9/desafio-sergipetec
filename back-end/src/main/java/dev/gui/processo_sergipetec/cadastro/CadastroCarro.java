@@ -1,9 +1,7 @@
 package dev.gui.processo_sergipetec.cadastro;
 
 import dev.gui.processo_sergipetec.connection.DatabaseConnection;
-import dev.gui.processo_sergipetec.interfaces.ICadastro;
 import dev.gui.processo_sergipetec.model.CarroModel;
-import dev.gui.processo_sergipetec.model.VeiculoModel;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
@@ -13,13 +11,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
-public class CadastroCarro extends CadastroVeiculo implements ICadastro {
+public class CadastroCarro extends CadastroVeiculo<CarroModel> {
     // Restrição dos tipos de combustível
     private static final Set<String> TIPOS_COMBUSTIVEL = new HashSet<>(Set.of("Gasolina", "Etanol", "Diesel", "Flex"));
 
-    public void cadastrarCarro(CarroModel carro) throws SQLException {
+    @Override
+    public void cadastrar(CarroModel carro) throws SQLException {
+        super.cadastrar(carro); // Puxa a função base de cadastrar um veículo
         validarTipoCombustivel(carro.getTipoCombustivel());
-        cadastrarVeiculo(carro); // Puxa a função base de cadastrar um veículo
         String query = "INSERT INTO TB_CARRO (id, quantidade_portas, tipo_combustivel) VALUES (?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -32,9 +31,8 @@ public class CadastroCarro extends CadastroVeiculo implements ICadastro {
     }
 
     @Override
-    public VeiculoModel atualizar(int id, VeiculoModel veiculo) throws SQLException {
-        atualizar(id, veiculo);
-        CarroModel carro = (CarroModel) veiculo;
+    public void atualizar(int id, CarroModel carro) throws SQLException {
+        super.atualizar(id, carro);
         validarTipoCombustivel(carro.getTipoCombustivel());
 
         String queryCarro = "UPDATE TB_CARRO SET quantidade_portas = ?, tipo_combustivel = ? WHERE id = ?";
@@ -45,7 +43,6 @@ public class CadastroCarro extends CadastroVeiculo implements ICadastro {
             statement.setInt(3, id);
             statement.executeUpdate();
         }
-        return veiculo;
     }
 
     @Override
