@@ -26,7 +26,7 @@ public class CadastroMoto extends CadastroVeiculo<MotoModel> {
     }
 
     @Override
-    public MotoModel atualizar(int id, VeiculoModel veiculo) throws SQLException {
+    public void atualizar(int id, VeiculoModel veiculo) throws SQLException {
         super.atualizar(id, veiculo);
         MotoModel moto = (MotoModel) veiculo;
         String queryMoto = "UPDATE TB_MOTO SET cilindrada = ? WHERE id = ?";
@@ -36,7 +36,6 @@ public class CadastroMoto extends CadastroVeiculo<MotoModel> {
             statement.setInt(2, id);
             statement.executeUpdate();
         }
-        return moto;
     }
 
     @Override

@@ -3,12 +3,11 @@ package dev.gui.processo_sergipetec.service;
 import dev.gui.processo_sergipetec.cadastro.CadastroCarro;
 import dev.gui.processo_sergipetec.cadastro.CadastroMoto;
 import dev.gui.processo_sergipetec.cadastro.CadastroVeiculo;
-import dev.gui.processo_sergipetec.model.VeiculoModel;
-import dev.gui.processo_sergipetec.repository.BuscaRepository;
+import dev.gui.processo_sergipetec.model.CarroModel;
+import dev.gui.processo_sergipetec.model.MotoModel;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
-import java.util.List;
 
 @Service
 public class IncluirVeiculoService {
@@ -22,8 +21,16 @@ public class IncluirVeiculoService {
         this.cadastroMoto = cadastroMoto;
     }
 
-    public Object atualizarVeiculo(int id, VeiculoModel veiculo) throws SQLException {
-        return cadastroVeiculo.atualizar(id, veiculo);
+    public void atualizarVeiculo(int id, Object veiculo) throws SQLException {
+        if (veiculo instanceof CarroModel) {
+            CarroModel carro = (CarroModel) veiculo;
+            cadastroCarro.atualizar(id, carro);
+        } else if (veiculo instanceof MotoModel) {
+            MotoModel moto = (MotoModel) veiculo;
+            cadastroMoto.atualizar(id, moto);
+        } else {
+            System.out.println("Tipo desconhecido");
+        }
     }
 
     public void deletarVeiculo(int id) throws SQLException {

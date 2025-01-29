@@ -34,7 +34,7 @@ public class CadastroVeiculo<T extends VeiculoModel> implements ICadastro<T> {
     }
 
     @Override
-    public T atualizar(int id, VeiculoModel veiculo) throws SQLException {
+    public void atualizar(int id, VeiculoModel veiculo) throws SQLException {
         String query = "UPDATE TB_VEICULO SET modelo = ?, fabricante = ?, cor = ?, ano = ?, preco = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -53,7 +53,6 @@ public class CadastroVeiculo<T extends VeiculoModel> implements ICadastro<T> {
         } catch (SQLException e) {
             System.out.println("Erro ao atualizar o veículo: " + e.getMessage());
         }
-        return (T) veiculo;
     }
 
     @Override

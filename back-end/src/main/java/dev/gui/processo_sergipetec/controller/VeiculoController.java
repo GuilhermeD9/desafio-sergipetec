@@ -68,8 +68,9 @@ public class VeiculoController {
             throw new RuntimeException(e);
         }
     }
-        @PutMapping("/atualizar/{id}")
-    public ResponseEntity<VeiculoModel> atualizarVeiculo(@PathVariable int id, @RequestBody VeiculoModel veiculo) throws SQLException {
+
+    @PutMapping("/atualizar/{id}")
+    public ResponseEntity<Object> atualizarVeiculo(@PathVariable int id, @RequestBody Object veiculo) throws SQLException {
         veiculoService.atualizarVeiculo(id, veiculo);
         return ResponseEntity.ok(veiculo);
     }
