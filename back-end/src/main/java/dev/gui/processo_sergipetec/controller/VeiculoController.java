@@ -43,7 +43,7 @@ public class VeiculoController {
     }
 
     @GetMapping("/consultar/{id}")
-    public ResponseEntity<VeiculoModel> listarVeiculoPorId(@PathVariable int id) throws SQLException {
+    public ResponseEntity<VeiculoModel> listarVeiculoPorId(@PathVariable int id) {
         VeiculoModel veiculo = buscaService.consultarVeiculoPorId(id);
         if (veiculo != null) {
             return ResponseEntity.ok(veiculo);

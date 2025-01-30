@@ -1,5 +1,6 @@
 package dev.gui.processo_sergipetec.model;
 
+
 public class CarroModel extends VeiculoModel {
     private int quantidadePortas;
     private String tipoCombustivel;
@@ -18,7 +19,6 @@ public class CarroModel extends VeiculoModel {
     }
 
     public CarroModel() {
-
     }
 
     public int getQuantidadePortas() {

@@ -1,6 +1,5 @@
 package dev.gui.processo_sergipetec.repository;
 
-import dev.gui.processo_sergipetec.cadastro.CadastroVeiculo;
 import dev.gui.processo_sergipetec.connection.DatabaseConnection;
 import dev.gui.processo_sergipetec.model.CarroModel;
 import dev.gui.processo_sergipetec.model.MotoModel;
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class BuscaRepository extends CadastroVeiculo {
+public class BuscaRepository {
 
     /* É capaz de fazer a busca de duas formas, passando parâmetros e limitando
         a busca, ou sem mandar nada retornando tudo do banco.
@@ -101,14 +100,11 @@ public class BuscaRepository extends CadastroVeiculo {
         int ano = rs.getInt("ano");
         double preco = rs.getDouble("preco");
 
-        switch (tipo) {
-            case "Carro":
-                return DetalharCarro(id, modelo, fabricante, cor, ano, preco, tipo, connection);
-            case "Moto":
-                return DetalharMoto(id, modelo, fabricante, cor, ano, preco, tipo, connection);
-            default:
-                return null;
-        }
+        return switch (tipo) {
+            case "Carro" -> DetalharCarro(id, modelo, fabricante, cor, ano, preco, tipo, connection);
+            case "Moto" -> DetalharMoto(id, modelo, fabricante, cor, ano, preco, tipo, connection);
+            default -> null;
+        };
     }
 
     private MotoModel DetalharMoto(int id, String modelo, String fabricante, String cor, int ano, double preco, String tipo, Connection connection) throws SQLException {

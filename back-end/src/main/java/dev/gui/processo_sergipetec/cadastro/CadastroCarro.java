@@ -19,8 +19,8 @@ public class CadastroCarro extends CadastroVeiculo<CarroModel> {
     public void cadastrar(CarroModel carro) throws SQLException {
         super.cadastrar(carro); // Puxa a função base de cadastrar um veículo
         validarTipoCombustivel(carro.getTipoCombustivel());
-        String query = "INSERT INTO TB_CARRO (id, quantidade_portas, tipo_combustivel) VALUES (?, ?, ?)";
 
+        String query = "INSERT INTO TB_CARRO (id, quantidade_portas, tipo_combustivel) VALUES (?, ?, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, carro.getId());

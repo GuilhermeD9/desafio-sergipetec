@@ -16,7 +16,6 @@ public class MotoModel extends VeiculoModel {
     }
 
     public MotoModel() {
-
     }
 
     public int getCilindrada() {

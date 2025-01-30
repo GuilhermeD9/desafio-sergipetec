@@ -28,9 +28,9 @@ public class CadastroMoto extends CadastroVeiculo<MotoModel> {
     public void atualizar(int id, MotoModel moto) throws SQLException {
         super.atualizar(id, moto);
 
-        String queryMoto = "UPDATE TB_MOTO SET cilindrada = ? WHERE id = ?";
+        String query = "UPDATE TB_MOTO SET cilindrada = ? WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(queryMoto)) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, moto.getCilindrada());
             statement.setInt(2, id);
             statement.executeUpdate();
