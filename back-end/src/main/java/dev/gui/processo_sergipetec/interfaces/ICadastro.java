@@ -1,6 +1,5 @@
 package dev.gui.processo_sergipetec.interfaces;
 
-import dev.gui.processo_sergipetec.model.VeiculoModel;
 
 import java.sql.SQLException;
 
