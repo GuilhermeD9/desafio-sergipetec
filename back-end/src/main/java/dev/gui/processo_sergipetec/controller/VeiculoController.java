@@ -1,5 +1,6 @@
 package dev.gui.processo_sergipetec.controller;
 
+import dev.gui.processo_sergipetec.dto.VeiculoDTO;
 import dev.gui.processo_sergipetec.model.CarroModel;
 import dev.gui.processo_sergipetec.model.MotoModel;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
@@ -70,7 +71,7 @@ public class VeiculoController {
     }
 
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<Object> atualizarVeiculo(@PathVariable int id, @RequestBody Object veiculo) throws SQLException {
+    public ResponseEntity<Object> atualizarVeiculo(@PathVariable int id, @RequestBody VeiculoDTO veiculo) throws SQLException {
         veiculoService.atualizarVeiculo(id, veiculo);
         return ResponseEntity.ok(veiculo);
     }

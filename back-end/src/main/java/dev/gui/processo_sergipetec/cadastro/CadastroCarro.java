@@ -35,9 +35,9 @@ public class CadastroCarro extends CadastroVeiculo<CarroModel> {
         super.atualizar(id, carro);
         validarTipoCombustivel(carro.getTipoCombustivel());
 
-        String queryCarro = "UPDATE TB_CARRO SET quantidade_portas = ?, tipo_combustivel = ? WHERE id = ?";
+        String query = "UPDATE TB_CARRO SET quantidade_portas = ?, tipo_combustivel = ? WHERE id = ?";
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(queryCarro)) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, carro.getQuantidadePortas());
             statement.setString(2, carro.getTipoCombustivel());
             statement.setInt(3, id);

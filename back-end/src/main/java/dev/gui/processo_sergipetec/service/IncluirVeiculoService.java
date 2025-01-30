@@ -3,6 +3,7 @@ package dev.gui.processo_sergipetec.service;
 import dev.gui.processo_sergipetec.cadastro.CadastroCarro;
 import dev.gui.processo_sergipetec.cadastro.CadastroMoto;
 import dev.gui.processo_sergipetec.cadastro.CadastroVeiculo;
+import dev.gui.processo_sergipetec.dto.VeiculoDTO;
 import dev.gui.processo_sergipetec.model.CarroModel;
 import dev.gui.processo_sergipetec.model.MotoModel;
 import org.springframework.stereotype.Service;
@@ -21,12 +22,16 @@ public class IncluirVeiculoService {
         this.cadastroMoto = cadastroMoto;
     }
 
-    public void atualizarVeiculo(int id, Object veiculo) throws SQLException {
-        if (veiculo instanceof CarroModel) {
-            CarroModel carro = (CarroModel) veiculo;
+    public void atualizarVeiculo(int id, VeiculoDTO veiculo) throws SQLException {
+        if (veiculo.getTipo().equalsIgnoreCase("Carro")) {
+            CarroModel carro = new CarroModel(
+                    id, veiculo.getModelo(), veiculo.getFabricante(), veiculo.getCor(), veiculo.getAno(),
+                    veiculo.getPreco(), veiculo.getTipo(), veiculo.getQuantidadePortas(), veiculo.getTipoCombustivel());
             cadastroCarro.atualizar(id, carro);
-        } else if (veiculo instanceof MotoModel) {
-            MotoModel moto = (MotoModel) veiculo;
+        } else if (veiculo.getTipo().equalsIgnoreCase("Moto")) {
+            MotoModel moto = new MotoModel(
+                    id, veiculo.getModelo(), veiculo.getFabricante(), veiculo.getCor(), veiculo.getAno(),
+                    veiculo.getPreco(), veiculo.getTipo(), veiculo.getCilindrada());
             cadastroMoto.atualizar(id, moto);
         } else {
             System.out.println("Tipo desconhecido");
