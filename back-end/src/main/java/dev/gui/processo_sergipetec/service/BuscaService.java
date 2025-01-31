@@ -1,11 +1,11 @@
 package dev.gui.processo_sergipetec.service;
 
+import dev.gui.processo_sergipetec.dto.PaginacaoDTO;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
 import dev.gui.processo_sergipetec.repository.BuscaRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
-import java.util.List;
 
 @Service
 public class BuscaService {
@@ -19,7 +19,8 @@ public class BuscaService {
         return buscaRepository.listarVeiculoPorId(id);
     }
 
-    public List<VeiculoModel> consultaPersonalizada(String tipo, String modelo, String cor, Integer ano) throws SQLException {
-        return buscaRepository.consultarVeiculos(tipo, modelo, cor, ano);
+    public PaginacaoDTO consultarVeiculos(String tipo, String modelo, String cor, Integer ano,
+                                          String ordenacao, int pagina, int tamanho) throws SQLException {
+        return buscaRepository.consultarVeiculos(tipo, modelo, cor, ano, ordenacao, pagina, tamanho);
     }
 }
