@@ -1,6 +1,7 @@
 package dev.gui.processo_sergipetec.repository;
 
 import dev.gui.processo_sergipetec.connection.DatabaseConnection;
+import dev.gui.processo_sergipetec.dto.PaginacaoDTO;
 import dev.gui.processo_sergipetec.model.CarroModel;
 import dev.gui.processo_sergipetec.model.MotoModel;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
@@ -12,47 +13,77 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class BuscaRepository {
-
     /* É capaz de fazer a busca de duas formas, passando parâmetros e limitando
         a busca, ou sem mandar nada retornando tudo do banco.
      */
-    public List<VeiculoModel> consultarVeiculos(String tipo, String modelo, String cor, Integer ano) throws SQLException {
+    public PaginacaoDTO consultarVeiculos(String tipo, String modelo, String cor, Integer ano,
+                                          String ordenacao, int pagina, int tamanho) throws SQLException {
         String query = "SELECT * FROM TB_VEICULO WHERE 1=1";
+        String countQuery = "SELECT COUNT(*) FROM TB_VEICULO WHERE 1=1";
         List<Object> parametros = new ArrayList<>();
 
         if (tipo != null) {
             switch (tipo.toLowerCase()) {
-                case "carro" :
-                    tipo = "Carro";
-                    break;
-                case "moto" :
-                    tipo = "Moto";
-                    break;
-                default:
-                    throw new IllegalArgumentException("Tipo de veículo inválido: " + tipo);
+                case "carro" -> tipo = "Carro";
+                case "moto" -> tipo = "Moto";
+                default -> throw new IllegalArgumentException("Tipo de veículo inválido: " + tipo);
             }
             query += " AND tipo = ?";
+            countQuery += " AND tipo = ?";
             parametros.add(tipo);
         }
         if (modelo != null) {
-            query += " AND LOWER(modelo) = ?"; // O LOWER é para evitar problemas com caracteres maiúsculos
-            parametros.add(modelo.toLowerCase());
+            query += " AND LOWER(modelo) LIKE ?"; // O LOWER é para evitar problemas com caracteres maiúsculos
+            countQuery += " AND LOWER(modelo) LIKE ?";
+            parametros.add(modelo.toLowerCase() + "%");
         }
-
         if (cor != null) {
-            query += " AND LOWER(cor) = ?";
-            parametros.add(cor.toLowerCase());
+            query += " AND LOWER(cor) LIKE ?";
+            countQuery += " AND LOWER(cor) LIKE ?";
+            parametros.add(cor.toLowerCase() + "%");
         }
-
         if (ano != null) {
             query += " AND ano = ?";
+            countQuery += " AND ano = ?";
             parametros.add(ano);
         }
 
-        try (Connection connection = DatabaseConnection.getConnection();
+        // Parametros sem LIMIT e OFFSET
+        List<Object> parametrosCount = new ArrayList<>(parametros);
+
+        // Adiciona Ordenação
+        if (ordenacao != null) {
+            Map<String, String> colunasPermitidas = Map.of("id", "id", "modelo", "modelo",
+                    "ano", "ano",  "preco", "preco");
+
+            String colunaOrdenacao = colunasPermitidas.get(ordenacao.toLowerCase());
+            query += " ORDER BY " + colunaOrdenacao;
+        }
+
+        // Paginação
+        query += " LIMIT ? OFFSET ?";
+        parametros.add(tamanho);
+        parametros.add(pagina * tamanho);
+
+        int totalRegistros = 0;
+
+        try (Connection connection = DatabaseConnection.getConnection(); // Contador de veículos
+             PreparedStatement countStatement = connection.prepareStatement(countQuery)) {
+            for (int i = 0; i < parametrosCount.size(); i++) {
+                countStatement.setObject(i + 1, parametrosCount.get(i));
+            }
+            try (ResultSet rs = countStatement.executeQuery()) {
+                if (rs.next()) {
+                    totalRegistros = rs.getInt(1);
+                }
+            }
+        }
+
+        try (Connection connection = DatabaseConnection.getConnection(); // Buscador de veículos
              PreparedStatement statement = connection.prepareStatement(query)) {
             // Organiza os parâmetros de busca
             for (int i = 0; i < parametros.size(); i++) {
@@ -67,7 +98,7 @@ public class BuscaRepository {
                     if (veiculo != null) veiculos.add(veiculo);
                 }
             }
-            return veiculos;
+            return new PaginacaoDTO(veiculos, totalRegistros);
         }
     }
 

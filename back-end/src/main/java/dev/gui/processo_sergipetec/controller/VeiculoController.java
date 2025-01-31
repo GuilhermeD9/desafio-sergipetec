@@ -1,5 +1,6 @@
 package dev.gui.processo_sergipetec.controller;
 
+import dev.gui.processo_sergipetec.dto.PaginacaoDTO;
 import dev.gui.processo_sergipetec.dto.VeiculoDTO;
 import dev.gui.processo_sergipetec.model.CarroModel;
 import dev.gui.processo_sergipetec.model.MotoModel;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/veiculos")
@@ -54,14 +54,17 @@ public class VeiculoController {
     }
 
     @GetMapping("/consultar-veiculos")
-    public ResponseEntity<List<VeiculoModel>> buscaPersonalizada(
+    public ResponseEntity<PaginacaoDTO> buscaPersonalizada(
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String modelo,
             @RequestParam(required = false) String cor,
-            @RequestParam(required = false) Integer ano) {
+            @RequestParam(required = false) Integer ano,
+            @RequestParam(defaultValue = "id") String ordenacao,
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "10") int tamanho) {
         try {
-            List<VeiculoModel> veiculos = buscaService.consultaPersonalizada(tipo, modelo, cor, ano);
-            if (veiculos.isEmpty()) {
+            PaginacaoDTO veiculos = buscaService.consultarVeiculos(tipo, modelo, cor, ano, ordenacao, pagina, tamanho);
+            if (veiculos.getVeiculos().isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(veiculos);
             }
             return ResponseEntity.ok(veiculos);
