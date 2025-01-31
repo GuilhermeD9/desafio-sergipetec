@@ -1,6 +1,9 @@
 CÓDIGOS PARA CRIAÇÃO DO BD
 
-Criação ------------------------------------
+Basta copiar e colar um por vez.
+
+Passo 01 - Criação 
+
 
 create database db_frota;
 
@@ -29,30 +32,37 @@ CREATE TABLE TB_MOTO (
 );
 
 
-Inserção ------------------------------------------
+Passo 02 - Inserção
 
 INSERT INTO TB_VEICULO (modelo, fabricante, cor, ano, preco, tipo) VALUES
 ('Fusca', 'Volkswagen', 'Azul', 1968, 25000, 'Carro'),
 ('Civic', 'Honda', 'Preto', 2020, 100000, 'Carro'),
 ('Twister', 'Honda', 'Vermelha', 2022, 25000, 'Moto'),
-('CB500', 'Honda', 'Preta', 2021, 35000, 'Moto'),
+('CB500', 'Honda', 'Preto', 2021, 35000, 'Moto'),
 ('Gol', 'Volkswagen', 'Branco', 2018, 45000, 'Carro'),
-('Maverick', 'Ford', 'Verde', 1975, 55000, 'Carro'),
+('Ranger', 'Ford', 'Verde', 1975, 55000, 'Carro'),
 ('XRE 300', 'Honda', 'Preta', 2020, 29000, 'Moto'),
 ('CR-V', 'Honda', 'Prata', 2021, 120000, 'Carro'),
 ('CBR 1000RR', 'Honda', 'Azul', 2022, 80000, 'Moto'),
+('Fz25', 'Yamaha', 'Azul', 2022, 22000, 'Moto'),
+('Corolla', 'Toyota', 'Prata', 2022, 150000, 'Carro');
 ('Hilux', 'Toyota', 'Cinza', 2022, 150000, 'Carro');
 
 INSERT INTO TB_CARRO (id, quantidade_portas, tipo_combustivel) VALUES
-(1, 4, 'Gasolina'),
+(1, 2, 'Gasolina'),
 (2, 4, 'Flex'),
 (5, 4, 'Flex'),
-(6, 2, 'Gasolina'),
+(6, 2, 'Diesel'),
 (8, 4, 'Flex'),
-(10, 4, 'Diesel');
+(11, 4, 'Flex'),
+(12, 4, 'Diesel');
 
 INSERT INTO TB_MOTO (id, cilindrada) VALUES
 (3, 250),
 (4, 500),
 (7, 300),
-(9, 1000);
+(9, 1000)
+(10, 250);
+
+
+Pronto, agora volte para o back-end!
