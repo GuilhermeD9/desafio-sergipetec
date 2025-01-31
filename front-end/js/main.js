@@ -1,7 +1,7 @@
 const apiBaseUrl = 'http://localhost:8080';
 
 // Carrega os veículos ao carregar a página
-document.addEventListener('DOMContentLoaded', filtrarVeiculos);
+document.addEventListener('DOMContentLoaded', consultarVeiculos);
 
 async function carregarVeiculos(url) {
     const apiUrl = url || `${apiBaseUrl}/veiculos/consultar-veiculos`;
@@ -10,34 +10,23 @@ async function carregarVeiculos(url) {
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error('Erro ao carregar veículos.');
 
-        const veiculos = await response.json();
+        const data = await response.json();
+
+        const veiculos = data.veiculos;
         console.log('Dados recebidos:', veiculos);
 
         const tableBody = document.getElementById('veiculos-table-body');
-        tableBody.innerHTML = veiculos.map(veiculo => criarLinhaTabela(veiculo)).join('');
+        tableBody.innerHTML = '';
+
+        veiculos.forEach(veiculo => {
+            const linha = criarLinhaTabela(veiculo);
+            tableBody.innerHTML += linha;
+        });
 
     } catch (error) {
         console.error('Erro:', error);
         Swal.fire('Erro!', 'Veículo(s) não encontrado(s)', 'error')
     }    
-}
-
-function criarLinhaTabela(veiculo) {
-    return `
-            <tr>
-                <td>${veiculo.id}</td>
-                <td>${veiculo.modelo}</td>
-                <td>${veiculo.fabricante}</td>
-                <td>${veiculo.cor}</td>
-                <td>${veiculo.ano}</td>
-                <td>${veiculo.tipo}</td>
-                <td class="actions">
-                    <button class="edit" onclick="editarVeiculo(${veiculo.id})">Editar</button>
-                    <button class="delete" onclick="deletarVeiculo(${veiculo.id})">Excluir</button>
-                    <button class="details" onclick="detalharVeiculo(${veiculo.id})">Detalhes</button>
-                </td>
-            </tr>    
-        `;
 }
 
 async function detalharVeiculo(id) {
@@ -85,21 +74,78 @@ async function detalharVeiculo(id) {
     }
 }
 
-async function filtrarVeiculos() {
+async function consultarVeiculos(page = 1) {
+    page = Number(page);
+    if (isNaN(page) || page < 1) {
+        page = 1;
+    }
+    
     const tipo = document.getElementById('filter-tipo').value;
     const modelo = document.getElementById('filter-modelo').value;
     const cor = document.getElementById('filter-cor').value;
     const ano = document.getElementById('filter-ano').value;
+    const ordenacao = document.getElementById('ordenacao').value || 'id';
 
     const filtros = {};
     if (tipo) filtros.tipo = tipo;
     if (modelo) filtros.modelo = modelo;
     if (cor) filtros.cor = cor;
     if (ano) filtros.ano = ano;
+    filtros.ordenacao = ordenacao;
+    filtros.pagina = page - 1; 
 
     const params = new URLSearchParams(filtros).toString();
     const url = `${apiBaseUrl}/veiculos/consultar-veiculos?${params}`;
-    await carregarVeiculos(url);
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    carregarVeiculos(url);
+    atualizarPaginacao(data.totalRegistros, page);
+}
+
+async function deletarVeiculo(id) {
+    const confirmDelete = await Swal.fire({
+        title: 'Excluir Veículo?',
+        text: 'Você tem certeza que deseja excluir este veículo?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Excluir',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (confirmDelete.isConfirmed) {
+        fetch(`${apiBaseUrl}/veiculos/deletar/${id}`, { method: 'DELETE' })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro ao excluir o veículo.');
+                Swal.fire('Sucesso', 'Veículo excluído com sucesso!', 'success');
+                carregarVeiculos();
+            })
+            .catch(error => {
+                console.error('Erro ao excluir veículo:', error);
+                Swal.fire('Erro', 'Falha ao excluir o veículo.', 'error');
+            });
+    }
+}
+
+function atualizarPaginacao(totalRegistros, paginaAtual) {
+    const paginacaoContainer = document.getElementById('paginacao');
+    paginacaoContainer.innerHTML = '';
+
+    const totalPages = Math.ceil(totalRegistros / 10);
+
+    for (let i = 0; i < totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i + 1; // Exibe a página (1, 2, 3, ...)
+        btn.onclick = (Event) => {
+            Event.preventDefault();
+            consultarVeiculos(i + 1);
+        }; // Chama a função de carregar veículos com o número da página
+        if (i === (paginaAtual - 1)) { // Se for a página atual, aplica a classe "active"
+            btn.classList.add('active');
+        }
+        paginacaoContainer.appendChild(btn);
+    }
 }
 
 function abrirFormularioCadastro() {
@@ -121,36 +167,6 @@ function abrirFormularioCadastro() {
             salvarVeiculo(url, dados)
         }
     });
-}
-
-function gerarFormularioCadastro() {
-    return `
-            <div style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
-                <label for="tipo-veiculo" style="font-weight: bold;">Tipo:</label>
-                <select id="tipo-veiculo" onchange="atualizarFormularioCadastro()" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                    <option value="">Selecione</option>
-                    <option value="Carro">Carro</option>
-                    <option value="Moto">Moto</option>
-                </select>
-
-                <label for="modelo" style="font-weight: bold;">Modelo:</label>
-                <input type="text" id="modelo" placeholder="Modelo" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-
-                <label for="fabricante" style="font-weight: bold;">Fabricante:</label>
-                <input type="text" id="fabricante" placeholder="Fabricante" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-
-                <label for="cor" style="font-weight: bold;">Cor:</label>
-                <input type="text" id="cor" placeholder="Cor" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-
-                <label for="ano" style="font-weight: bold;">Ano:</label>
-                <input type="number" id="ano" placeholder="Ano" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-
-                <label for="preco" style="font-weight: bold;">Preço:</label>
-                <input type="number" id="preco" placeholder="Preço" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-
-                <div id="campos-extras" style="margin-top: 10px;"></div>
-            </div>
-        `;
 }
 
 function obterDadosFormularioCadastro() {
@@ -215,28 +231,6 @@ function atualizarFormularioCadastro() {
     camposExtras.innerHTML = tipo === 'Carro' ? gerarCamposExtrasCarro() : tipo === 'Moto' ? gerarCamposExtrasMoto() : '';
 }
 
-function gerarCamposExtrasCarro() {
-    return `
-            <label for="quantidade-portas" style="font-weight: bold;">Quantidade de Portas:</label>
-            <input type="number" id="quantidade-portas" placeholder="Portas" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-            <br>
-            <label for="tipo-combustivel" style="font-weight: bold;">Tipo de Combustível:</label>
-            <select id="tipo-combustivel" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                <option value="Gasolina">Gasolina</option>
-                <option value="Etanol">Etanol</option>
-                <option value="Flex">Flex</option>
-                <option value="Diesel">Diesel</option>
-            </select>
-        `;
-}
-
-function gerarCamposExtrasMoto() {
-    return `
-            <label for="cilindrada" style="font-weight: bold;">Cilindrada:</label>
-            <input type="number" id="cilindrada" placeholder="Cilindrada" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-        `;
-}
-
 function editarVeiculo(id) {
     fetch(`${apiBaseUrl}/veiculos/consultar/${id}`)
         .then(response => response.json())
@@ -285,6 +279,87 @@ function editarVeiculo(id) {
         });
 }
 
+function limparFiltros() {
+    // Limpar os campos de filtro
+    document.getElementById('filter-tipo').value = '';
+    document.getElementById('filter-modelo').value = '';
+    document.getElementById('filter-cor').value = '';
+    document.getElementById('filter-ano').value = '';
+
+    filtrarVeiculos();
+}
+
+// Funções complementares de criação de texto.
+function criarLinhaTabela(veiculo) {
+    return `
+            <tr>
+                <td>${veiculo.id}</td>
+                <td>${veiculo.modelo}</td>
+                <td>${veiculo.fabricante}</td>
+                <td>${veiculo.cor}</td>
+                <td>${veiculo.ano}</td>
+                <td>${veiculo.tipo}</td>
+                <td class="actions">
+                    <button class="edit" onclick="editarVeiculo(${veiculo.id})">Editar</button>
+                    <button class="delete" onclick="deletarVeiculo(${veiculo.id})">Excluir</button>
+                    <button class="details" onclick="detalharVeiculo(${veiculo.id})">Detalhes</button>
+                </td>
+            </tr>    
+        `;
+}
+
+function gerarFormularioCadastro() {
+    return `
+            <div style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
+                <label for="tipo-veiculo" style="font-weight: bold;">Tipo:</label>
+                <select id="tipo-veiculo" onchange="atualizarFormularioCadastro()" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                    <option value="">Selecione</option>
+                    <option value="Carro">Carro</option>
+                    <option value="Moto">Moto</option>
+                </select>
+
+                <label for="modelo" style="font-weight: bold;">Modelo:</label>
+                <input type="text" id="modelo" placeholder="Modelo" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+
+                <label for="fabricante" style="font-weight: bold;">Fabricante:</label>
+                <input type="text" id="fabricante" placeholder="Fabricante" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+
+                <label for="cor" style="font-weight: bold;">Cor:</label>
+                <input type="text" id="cor" placeholder="Cor" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+
+                <label for="ano" style="font-weight: bold;">Ano:</label>
+                <input type="number" id="ano" placeholder="Ano" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+
+                <label for="preco" style="font-weight: bold;">Preço:</label>
+                <input type="number" id="preco" placeholder="Preço" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+
+                <div id="campos-extras" style="margin-top: 10px;"></div>
+            </div>
+        `;
+}
+
+function gerarCamposExtrasCarro() {
+    return `
+            <label for="quantidade-portas" style="font-weight: bold;">Quantidade de Portas:</label>
+            <input type="number" id="quantidade-portas" placeholder="Portas" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+            <br>
+            <label for="tipo-combustivel" style="font-weight: bold;">Tipo de Combustível:</label>
+            <select id="tipo-combustivel" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="Gasolina">Gasolina</option>
+                <option value="Etanol">Etanol</option>
+                <option value="Flex">Flex</option>
+                <option value="Diesel">Diesel</option>
+            </select>
+        `;
+}
+
+function gerarCamposExtrasMoto() {
+    return `
+            <label for="cilindrada" style="font-weight: bold;">Cilindrada:</label>
+            <input type="number" id="cilindrada" placeholder="Cilindrada" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+        `;
+}
+
 function gerarFormularioCadastroEdit(veiculo) {
     return `
         <div style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
@@ -307,28 +382,4 @@ function gerarFormularioCadastroEdit(veiculo) {
             <div id="campos-extras" style="margin-top: 10px;"></div>
         </div>
     `;
-}
-
-async function deletarVeiculo(id) {
-    const confirmDelete = await Swal.fire({
-        title: 'Excluir Veículo?',
-        text: 'Você tem certeza que deseja excluir este veículo?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Excluir',
-        cancelButtonText: 'Cancelar'
-    });
-
-    if (confirmDelete.isConfirmed) {
-        fetch(`${apiBaseUrl}/veiculos/deletar/${id}`, { method: 'DELETE' })
-            .then(response => {
-                if (!response.ok) throw new Error('Erro ao excluir o veículo.');
-                Swal.fire('Sucesso', 'Veículo excluído com sucesso!', 'success');
-                carregarVeiculos();
-            })
-            .catch(error => {
-                console.error('Erro ao excluir veículo:', error);
-                Swal.fire('Erro', 'Falha ao excluir o veículo.', 'error');
-            });
-    }
 }

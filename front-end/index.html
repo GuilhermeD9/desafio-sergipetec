@@ -23,7 +23,15 @@
                 <option value="Carro">Carro</option>
                 <option value="Moto">Moto</option>
             </select>
-            <button onclick="filtrarVeiculos()">Filtrar</button>
+
+            <!-- Filtros de Ordenação e Direção -->
+            <select id="ordenacao">
+                <option value="id">ID</option>
+                <option value="modelo">Modelo</option>
+                <option value="ano">Ano</option>
+            </select>
+            <button type="button" id="limpar-filtros" onclick="limparFiltros()">Limpar Filtros</button>
+            <button onclick="consultarVeiculos()">Filtrar</button>
         </div>
 
         <div class="table-container">
@@ -45,7 +53,10 @@
             </table>
         </div>
 
+        <div id="paginacao"></div>
+
         <button class="add" onclick="abrirFormularioCadastro()">Adicionar Veículo</button>
+
     </div>
     <script src="js/main.js"></script>
 </body>
