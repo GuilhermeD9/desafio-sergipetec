@@ -13,6 +13,9 @@ public class PaginacaoDTO {
         this.totalRegistros = totalRegistros;
     }
 
+    public PaginacaoDTO() {
+    }
+
     public List<VeiculoModel> getVeiculos() {
         return veiculos;
     }
