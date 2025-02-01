@@ -36,12 +36,12 @@ Conectar o Java ao SQL
   Nas variáveis DATABASE_URL / DATABASE_USER / DATABASE_PASSWORD, insira os dados referente a conexão do seu banco de dados.
 
 Por exemplo:
-    private static final String URL = "jdbc://meuenderecosql...";
+    private static final String URL = "jdbc:postgresql://localhost:5432/db_frota";
     private static final String USER = "meuuser";
     private static final String PASSWORD = "minhasenha";
 
-2. Abra e incie a classe "TestConnection.java" para garantir que está tudo conectado.
-  Você deverá receber no console: "Conexão estabelecida."
+2. Abra a pasta test e incie a classe "ConnectionTest.java" para garantir que está tudo conectado.
+  Você deverá receber um ok no teste.
 ```
 
 Carregar as dependências
