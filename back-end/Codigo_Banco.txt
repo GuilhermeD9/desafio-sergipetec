@@ -45,7 +45,7 @@ INSERT INTO TB_VEICULO (modelo, fabricante, cor, ano, preco, tipo) VALUES
 ('CR-V', 'Honda', 'Prata', 2021, 120000, 'Carro'),
 ('CBR 1000RR', 'Honda', 'Azul', 2022, 80000, 'Moto'),
 ('Fz25', 'Yamaha', 'Azul', 2022, 22000, 'Moto'),
-('Corolla', 'Toyota', 'Prata', 2022, 150000, 'Carro');
+('Corolla', 'Toyota', 'Prata', 2022, 150000, 'Carro'),
 ('Hilux', 'Toyota', 'Cinza', 2022, 150000, 'Carro');
 
 INSERT INTO TB_CARRO (id, quantidade_portas, tipo_combustivel) VALUES
@@ -61,7 +61,7 @@ INSERT INTO TB_MOTO (id, cilindrada) VALUES
 (3, 250),
 (4, 500),
 (7, 300),
-(9, 1000)
+(9, 1000),
 (10, 250);
 
 
