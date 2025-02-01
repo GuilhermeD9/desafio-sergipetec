@@ -7,7 +7,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final Dotenv dotenv = Dotenv.load(); // As variáveis estao em um arquivo .env
+    private static final Dotenv dotenv = Dotenv.load(); // Pode apagar essa variável após alterar as variáveis;
     private static final String URL = dotenv.get("DATABASE_URL");
     private static final String USER = dotenv.get("DATABASE_USER"); // Usuario do SQL
     private static final String PASSWORD = dotenv.get("DATABASE_PASSWORD"); // Senha do SQL

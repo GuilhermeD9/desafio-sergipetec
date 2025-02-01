@@ -11,6 +11,20 @@ public class VeiculoDTO {
     private String tipoCombustivel; // Apenas para carros
     private int cilindrada; // Apenas para motos
 
+    public VeiculoDTO(String modelo, String fabricante, String cor, int ano, double preco, String tipo, int quantidadePortas, String tipoCombustivel, int cilindrada) {
+        this.modelo = modelo;
+        this.fabricante = fabricante;
+        this.cor = cor;
+        this.ano = ano;
+        this.preco = preco;
+        this.tipo = tipo;
+        this.quantidadePortas = quantidadePortas;
+        this.tipoCombustivel = tipoCombustivel;
+        this.cilindrada = cilindrada;
+    }
+
+    public VeiculoDTO() {
+    }
 
     public String getModelo() {
         return modelo;

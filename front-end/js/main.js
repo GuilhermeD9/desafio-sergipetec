@@ -286,7 +286,7 @@ function limparFiltros() {
     document.getElementById('filter-cor').value = '';
     document.getElementById('filter-ano').value = '';
 
-    filtrarVeiculos();
+    consultarVeiculos();
 }
 
 // Funções complementares de criação de texto.
