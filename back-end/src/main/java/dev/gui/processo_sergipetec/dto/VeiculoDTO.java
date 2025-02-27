@@ -1,5 +1,7 @@
 package dev.gui.processo_sergipetec.dto;
 
+import dev.gui.processo_sergipetec.model.TiposCombustivel;
+
 public class VeiculoDTO {
     private String modelo;
     private String fabricante;
@@ -8,10 +10,10 @@ public class VeiculoDTO {
     private double preco;
     private String tipo; // "Carro" ou "Moto"
     private int quantidadePortas; // Apenas para carros
-    private String tipoCombustivel; // Apenas para carros
+    private TiposCombustivel tipoCombustivel; // Apenas para carros
     private int cilindrada; // Apenas para motos
 
-    public VeiculoDTO(String modelo, String fabricante, String cor, int ano, double preco, String tipo, int quantidadePortas, String tipoCombustivel, int cilindrada) {
+    public VeiculoDTO(String modelo, String fabricante, String cor, int ano, double preco, String tipo, int quantidadePortas, TiposCombustivel tipoCombustivel, int cilindrada) {
         this.modelo = modelo;
         this.fabricante = fabricante;
         this.cor = cor;
@@ -82,11 +84,11 @@ public class VeiculoDTO {
         this.quantidadePortas = quantidadePortas;
     }
 
-    public String getTipoCombustivel() {
+    public TiposCombustivel getTipoCombustivel() {
         return tipoCombustivel;
     }
 
-    public void setTipoCombustivel(String tipoCombustivel) {
+    public void setTipoCombustivel(TiposCombustivel tipoCombustivel) {
         this.tipoCombustivel = tipoCombustivel;
     }
 

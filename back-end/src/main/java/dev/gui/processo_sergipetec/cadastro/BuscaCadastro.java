@@ -4,6 +4,7 @@ import dev.gui.processo_sergipetec.connection.DatabaseConnection;
 import dev.gui.processo_sergipetec.dto.PaginacaoDTO;
 import dev.gui.processo_sergipetec.model.CarroModel;
 import dev.gui.processo_sergipetec.model.MotoModel;
+import dev.gui.processo_sergipetec.model.TiposCombustivel;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
 import org.springframework.stereotype.Repository;
 
@@ -161,7 +162,9 @@ public class BuscaCadastro {
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     int quantidadePortas = rs.getInt("quantidade_portas");
-                    String tipoCombustivel = rs.getString("tipo_combustivel");
+                    String tipoCombustivelStr = rs.getString("tipo_combustivel");
+
+                    TiposCombustivel tipoCombustivel = TiposCombustivel.fromString(tipoCombustivelStr);
                     return new CarroModel(id, modelo, fabricante, cor, ano, preco, tipo, quantidadePortas, tipoCombustivel);
                 }
             }
