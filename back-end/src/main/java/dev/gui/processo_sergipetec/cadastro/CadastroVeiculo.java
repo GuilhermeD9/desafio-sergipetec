@@ -1,7 +1,6 @@
 package dev.gui.processo_sergipetec.cadastro;
 
 import dev.gui.processo_sergipetec.connection.DatabaseConnection;
-import dev.gui.processo_sergipetec.interfaces.ICadastro;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
 import org.springframework.stereotype.Service;
 

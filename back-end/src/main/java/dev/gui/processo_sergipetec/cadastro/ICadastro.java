@@ -1,4 +1,4 @@
-package dev.gui.processo_sergipetec.interfaces;
+package dev.gui.processo_sergipetec.cadastro;
 
 
 import java.sql.SQLException;

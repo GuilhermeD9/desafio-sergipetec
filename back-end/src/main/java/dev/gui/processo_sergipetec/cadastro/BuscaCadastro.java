@@ -1,4 +1,4 @@
-package dev.gui.processo_sergipetec.repository;
+package dev.gui.processo_sergipetec.cadastro;
 
 import dev.gui.processo_sergipetec.connection.DatabaseConnection;
 import dev.gui.processo_sergipetec.dto.PaginacaoDTO;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class BuscaRepository {
+public class BuscaCadastro {
     /* É capaz de fazer a busca de duas formas, passando parâmetros e limitando
         a busca, ou sem mandar nada retornando tudo do banco.
      */

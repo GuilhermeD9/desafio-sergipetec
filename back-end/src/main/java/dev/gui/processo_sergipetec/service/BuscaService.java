@@ -2,25 +2,25 @@ package dev.gui.processo_sergipetec.service;
 
 import dev.gui.processo_sergipetec.dto.PaginacaoDTO;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
-import dev.gui.processo_sergipetec.repository.BuscaRepository;
+import dev.gui.processo_sergipetec.cadastro.BuscaCadastro;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 
 @Service
 public class BuscaService {
-    private final BuscaRepository buscaRepository;
+    private final BuscaCadastro buscaCadastro;
 
-    public BuscaService(BuscaRepository buscaRepository) {
-        this.buscaRepository = buscaRepository;
+    public BuscaService(BuscaCadastro buscaCadastro) {
+        this.buscaCadastro = buscaCadastro;
     }
 
     public VeiculoModel consultarVeiculoPorId(int id)  {
-        return buscaRepository.listarVeiculoPorId(id);
+        return buscaCadastro.listarVeiculoPorId(id);
     }
 
     public PaginacaoDTO consultarVeiculos(String tipo, String modelo, String cor, Integer ano,
                                           String ordenacao, int pagina, int tamanho) throws SQLException {
-        return buscaRepository.consultarVeiculos(tipo, modelo, cor, ano, ordenacao, pagina, tamanho);
+        return buscaCadastro.consultarVeiculos(tipo, modelo, cor, ano, ordenacao, pagina, tamanho);
     }
 }
