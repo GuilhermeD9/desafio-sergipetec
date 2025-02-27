@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 public class CadastroCarro extends CadastroVeiculo<CarroModel> {

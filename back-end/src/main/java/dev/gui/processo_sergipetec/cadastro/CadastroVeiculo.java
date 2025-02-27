@@ -2,11 +2,12 @@ package dev.gui.processo_sergipetec.cadastro;
 
 import dev.gui.processo_sergipetec.connection.DatabaseConnection;
 import dev.gui.processo_sergipetec.model.VeiculoModel;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.sql.*;
 
-@Service
+@Repository
 public class CadastroVeiculo<T extends VeiculoModel> implements ICadastro<T> {
 
     @Override

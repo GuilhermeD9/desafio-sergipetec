@@ -4,7 +4,7 @@ const apiBaseUrl = 'http://localhost:8080';
 document.addEventListener('DOMContentLoaded', consultarVeiculos);
 
 async function carregarVeiculos(url) {
-    const apiUrl = url || `${apiBaseUrl}/veiculos/consultar-veiculos`;
+    const apiUrl = url || `${apiBaseUrl}/veiculos`;
 
     try {
         const response = await fetch(apiUrl);
@@ -31,7 +31,7 @@ async function carregarVeiculos(url) {
 
 async function detalharVeiculo(id) {
     try {
-        const response = await fetch(`${apiBaseUrl}/veiculos/consultar/${id}`);
+        const response = await fetch(`${apiBaseUrl}/veiculos/${id}`);
         if (!response.ok) throw new Error('Erro ao carregar detalhes do veículo');
 
         const veiculo = await response.json();
@@ -95,7 +95,7 @@ async function consultarVeiculos(page = 1) {
     filtros.pagina = page - 1; 
 
     const params = new URLSearchParams(filtros).toString();
-    const url = `${apiBaseUrl}/veiculos/consultar-veiculos?${params}`;
+    const url = `${apiBaseUrl}/veiculos?${params}`;
 
     const response = await fetch(url);
     const data = await response.json();
@@ -115,7 +115,7 @@ async function deletarVeiculo(id) {
     });
 
     if (confirmDelete.isConfirmed) {
-        fetch(`${apiBaseUrl}/veiculos/deletar/${id}`, { method: 'DELETE' })
+        fetch(`${apiBaseUrl}/veiculos/${id}`, { method: 'DELETE' })
             .then(response => {
                 if (!response.ok) throw new Error('Erro ao excluir o veículo.');
                 Swal.fire('Sucesso', 'Veículo excluído com sucesso!', 'success');
@@ -163,7 +163,7 @@ function abrirFormularioCadastro() {
     }).then(result => {
         if (result.isConfirmed) {
             const dados = result.value;
-            const url = `${apiBaseUrl}/veiculos/cadastrar/${dados.tipo.toLowerCase()}`;
+            const url = `${apiBaseUrl}/veiculos/${dados.tipo.toLowerCase()}`;
             salvarVeiculo(url, dados)
         }
     });
@@ -232,7 +232,7 @@ function atualizarFormularioCadastro() {
 }
 
 function editarVeiculo(id) {
-    fetch(`${apiBaseUrl}/veiculos/consultar/${id}`)
+    fetch(`${apiBaseUrl}/veiculos/${id}`)
         .then(response => response.json())
         .then(veiculo => {
             Swal.fire({
@@ -250,7 +250,7 @@ function editarVeiculo(id) {
                 if (result.isConfirmed) {
                     const dados = result.value;
                     console.log('Dados do veículo:', dados);
-                    const url = `${apiBaseUrl}/veiculos/atualizar/${id}`;
+                    const url = `${apiBaseUrl}/veiculos/${id}`;
                     fetch(url, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },

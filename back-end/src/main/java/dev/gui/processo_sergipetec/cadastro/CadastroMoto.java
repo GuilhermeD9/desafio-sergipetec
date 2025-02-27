@@ -2,13 +2,14 @@ package dev.gui.processo_sergipetec.cadastro;
 
 import dev.gui.processo_sergipetec.connection.DatabaseConnection;
 import dev.gui.processo_sergipetec.model.MotoModel;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-@Service
+@Repository
 public class CadastroMoto extends CadastroVeiculo<MotoModel> {
 
     @Override

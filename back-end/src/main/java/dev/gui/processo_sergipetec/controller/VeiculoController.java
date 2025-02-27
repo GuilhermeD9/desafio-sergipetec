@@ -30,19 +30,19 @@ public class VeiculoController {
         this.buscaService = buscaService;
     }
 
-    @PostMapping("/cadastrar/carro")
+    @PostMapping("/carro")
     public ResponseEntity<VeiculoModel> cadastrarCarro(@RequestBody CarroModel carro) throws SQLException {
         carroService.cadastrarCarrro(carro);
         return ResponseEntity.status(HttpStatus.CREATED).body(carro);
     }
 
-    @PostMapping("/cadastrar/moto")
+    @PostMapping("/moto")
     public ResponseEntity<VeiculoModel> cadastrarMoto(@RequestBody MotoModel moto) throws SQLException {
         motoService.cadastrarMoto(moto);
         return ResponseEntity.status(HttpStatus.CREATED).body(moto);
     }
 
-    @GetMapping("/consultar/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<VeiculoModel> listarVeiculoPorId(@PathVariable int id) {
         VeiculoModel veiculo = buscaService.consultarVeiculoPorId(id);
         if (veiculo != null) {
@@ -53,7 +53,7 @@ public class VeiculoController {
         }
     }
 
-    @GetMapping("/consultar-veiculos")
+    @GetMapping
     public ResponseEntity<PaginacaoDTO> buscaPersonalizada(
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String modelo,
@@ -73,13 +73,13 @@ public class VeiculoController {
         }
     }
 
-    @PutMapping("/atualizar/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Object> atualizarVeiculo(@PathVariable int id, @RequestBody VeiculoDTO veiculo) throws SQLException {
         veiculoService.atualizarVeiculo(id, veiculo);
         return ResponseEntity.ok(veiculo);
     }
 
-    @DeleteMapping("/deletar/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deletarVeiculo(@PathVariable int id) throws SQLException {
         veiculoService.deletarVeiculo(id);
         return ResponseEntity.ok("Veículo deletado com sucesso! ID:" + id);
